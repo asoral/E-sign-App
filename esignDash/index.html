@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/Dexciss_logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>esign</title>
+  </head>
+  <body>
+    <!-- {{ boot }}
+    {{var11}} -->
+    <div id="root"></div>
+    <script>window.csrf_token = '{{ frappe.session.csrf_token }}';
+
+      if (!window.frappe) window.frappe = {};
+      
+      // frappe.boot = JSON.parse({{ boot }});
+  
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

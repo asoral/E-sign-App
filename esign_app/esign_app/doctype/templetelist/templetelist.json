@@ -1,0 +1,89 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{templete_title}-{######}",
+ "creation": "2024-07-16 11:00:00.888058",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "templete_title",
+  "templete_owner_email",
+  "templete_owner_name",
+  "templete_created_at",
+  "templete_json_data",
+  "base_pdf_data"
+ ],
+ "fields": [
+  {
+   "fieldname": "templete_title",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "templete title",
+   "reqd": 1
+  },
+  {
+   "fieldname": "templete_owner_email",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "templete owner email",
+   "reqd": 1
+  },
+  {
+   "fieldname": "templete_created_at",
+   "fieldtype": "Datetime",
+   "label": "templete created at"
+  },
+  {
+   "fieldname": "templete_owner_name",
+   "fieldtype": "Small Text",
+   "label": "templete owner name"
+  },
+  {
+   "fieldname": "templete_json_data",
+   "fieldtype": "JSON",
+   "label": "templete json data"
+  },
+  {
+   "fieldname": "base_pdf_data",
+   "fieldtype": "JSON",
+   "label": "base pdf data"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-09-20 14:48:39.298135",
+ "modified_by": "Administrator",
+ "module": "Esign App",
+ "name": "TempleteList",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Guest",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

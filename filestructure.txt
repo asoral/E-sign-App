@@ -1,0 +1,257 @@
+|-- .editorconfig
+|-- .eslintrc
+|-- .gitignore
+|-- .pre-commit-config.yaml
+|-- README.md
+|-- esignDash
+    |-- .env.production
+    |-- .eslintrc.cjs
+    |-- .gitignore
+    |-- README.md
+    |-- imp.txt
+    |-- index.html
+    |-- index.py
+    |-- package-lock.json
+    |-- package.json
+    |-- postcss.config.js
+    |-- proxyOptions.ts
+    |-- public
+        |-- Dexciss_logo.png
+        |-- NotoSansJP-Regular.otf
+        |-- NotoSerifJP-Regular.otf
+        |-- fonts
+            |-- NotoSansJP-Regular.otf
+            |-- NotoSerifJP-Regular.otf
+        |-- pdf.worker.mjs
+    |-- src
+        |-- App.tsx
+        |-- HorizontalLayout.tsx
+        |-- VerticalLayout.tsx
+        |-- assets
+            |-- AuthPage
+                |-- signup.jpg
+            |-- Dexciss_logo.png
+            |-- HeroModules
+                |-- CardsSignature IMG.png
+                |-- Group 5DocumentsIMG.png
+                |-- Group 6sentIMG.png
+                |-- Group 7InboxIMG.png
+                |-- Template ImagesTemplateIMG.png
+            |-- HomePage
+                |-- sign.jpg
+                |-- sign2.jpg
+            |-- TourImg
+                |-- imp
+                    |-- Screenshot from 2024-09-27 17-01-03.png
+                    |-- Screenshot from 2024-09-27 17-01-15.png
+                    |-- Screenshot from 2024-09-27 17-01-21.png
+                    |-- Screenshot from 2024-09-27 17-01-30.png
+                    |-- Screenshot from 2024-09-27 17-01-35.png
+                    |-- Screenshot from 2024-09-27 17-01-41.png
+                    |-- Screenshot from 2024-09-27 17-02-20.png
+                    |-- Screenshot from 2024-09-27 17-02-49.png
+                    |-- Screenshot from 2024-09-27 17-04-10.png
+                    |-- Screenshot from 2024-09-27 17-04-51.png
+                    |-- Screenshot from 2024-09-27 17-06-10.png
+                    |-- Screenshot from 2024-09-27 17-09-23.png
+            |-- icons
+                |-- Sign_out_circle.png
+                |-- Sign_out_circle.svg
+                |-- Trash.svg
+                |-- darhboard.svg
+                |-- documents.svg
+                |-- inbox.svg
+                |-- sent.svg
+                |-- sign.svg
+                |-- templete.svg
+            |-- pdfassets
+            |-- tailwind.css
+            |-- video
+                |-- Tour-V0.1.webm
+        |-- components
+            |-- ComingSoon.tsx
+            |-- ConfirmDeleteModal.tsx
+            |-- Footer.tsx
+            |-- Navbar_horizontal.tsx
+            |-- Navbar_vertical.tsx
+        |-- index.css
+        |-- loading
+            |-- BookAnimation.css
+            |-- BookAnimation.tsx
+            |-- BookAnimation2.tsx
+            |-- Temp.tsx
+        |-- main.tsx
+        |-- pages
+            |-- Dashboard
+                |-- Dashboard.tsx
+                |-- Document
+                    |-- DocBody.tsx
+                    |-- DocEdit.tsx
+                    |-- DocumentAllList.tsx
+                    |-- document.css
+                    |-- utility
+                        |-- SendDoc.tsx
+                |-- Documents.tsx
+                |-- Inbox.tsx
+                |-- Profile.tsx
+                |-- Sent
+                    |-- SentModal.tsx
+                |-- Sent.tsx
+                |-- Sign
+                    |-- AllSignatures.tsx
+                    |-- SignPad.tsx
+                |-- Signature.tsx
+                |-- Templete.tsx
+                |-- TempleteDash.tsx
+                |-- doc_signer
+                    |-- SignInput.tsx
+                    |-- Signer.tsx
+                    |-- document.css
+                |-- fonts
+                    |-- Montserrat-Light.ttf
+                |-- helper
+                    |-- BlankPDF.ts
+                    |-- ButtonUtilities.tsx
+                    |-- DataPDF.ts
+                    |-- GetPages.ts
+                    |-- Interface.ts
+                    |-- PDFtoBase64.ts
+                    |-- SignInput.tsx
+                    |-- TemplateMaping.ts
+                    |-- color.css
+                    |-- dayjsConfig.ts
+                    |-- extractUniqueElements.ts
+                    |-- pdfsb
+                        |-- PdfRenderer.tsx
+                |-- templete
+                    |-- TempleteAdd.tsx
+                    |-- TempleteAllList.tsx
+                    |-- TempleteEdit.tsx
+                    |-- templete.css
+            |-- Home.tsx
+            |-- auth
+                |-- Login_Auth.tsx
+                |-- Signin_Auth.tsx
+        |-- redux
+            |-- reducers
+                |-- documentReducerSlice.d.ts
+                |-- documentReducerSlice.js
+                |-- userReducerSlice.ts
+            |-- selectors
+                |-- userSelector.ts
+            |-- store.d.ts
+            |-- store.js
+        |-- types
+            |-- EsignApp
+                |-- EsignSignature.ts
+        |-- vite-env.d.ts
+    |-- tailwind.config.js
+    |-- tsconfig.json
+    |-- tsconfig.node.json
+    |-- vite.config.ts
+    |-- vite.config.ts.timestamp-1719401371105-54281393d8d66.mjs
+    |-- vite.config.ts.timestamp-1719548055708-f442fb9285463.mjs
+    |-- vite.config.ts.timestamp-1724038822508-88f664757518e.mjs
+|-- esign_app
+    |-- __init__.py
+    |-- __pycache__
+        |-- __init__.cpython-311.pyc
+        |-- api.cpython-311.pyc
+        |-- hooks.cpython-311.pyc
+    |-- api.py
+    |-- config
+        |-- __init__.py
+    |-- esign_app
+        |-- __init__.py
+        |-- __pycache__
+            |-- __init__.cpython-311.pyc
+        |-- doctype
+            |-- __init__.py
+            |-- __pycache__
+                |-- __init__.cpython-311.pyc
+            |-- esign_signature
+                |-- __init__.py
+                |-- __pycache__
+                    |-- __init__.cpython-311.pyc
+                    |-- esign_signature.cpython-311.pyc
+                |-- esign_signature.js
+                |-- esign_signature.json
+                |-- esign_signature.py
+                |-- test_esign_signature.py
+            |-- templetelist
+                |-- __init__.py
+                |-- __pycache__
+                    |-- __init__.cpython-311.pyc
+                    |-- templetelist.cpython-311.pyc
+                |-- templetelist.js
+                |-- templetelist.json
+                |-- templetelist.py
+                |-- test_templetelist.py
+    |-- hooks.py
+    |-- modules.txt
+    |-- patches.txt
+    |-- public
+        |-- .gitkeep
+        |-- NotoSansJP-Regular.otf
+        |-- NotoSerifJP-Regular.otf
+        |-- esignDash
+            |-- Dexciss_logo.png
+            |-- NotoSansJP-Regular.otf
+            |-- NotoSerifJP-Regular.otf
+            |-- assets
+                |-- ButtonUtilities-BE1fDbF8.js
+                |-- CardsSignature IMG-BQSy7hg3.png
+                |-- ConfirmDeleteModal-CU6XQCgQ.js
+                |-- Dashboard-CAa9lNV8.js
+                |-- Dexciss_logo-DBvTm4ob.png
+                |-- DocEdit-BY7Vp54_.css
+                |-- DocEdit-ByHAMhmJ.js
+                |-- Documents-Dqz44B-4.js
+                |-- Group 5DocumentsIMG-Cd38Y1iH.png
+                |-- Group 6sentIMG-CW6eLmVP.png
+                |-- Group 7InboxIMG-CXRIKgGL.png
+                |-- Inbox-Bd8Gw_g3.js
+                |-- Login_Auth-B1-nZVnn.js
+                |-- PdfRenderer-Vnp3SLeS.js
+                |-- Profile-CYOnIOe7.js
+                |-- Sent-Uix5aqd6.js
+                |-- SignPad-C23qWZmz.js
+                |-- Signature-D1CZyPi1.js
+                |-- Signer-B5BGVa3g.js
+                |-- Signer-BKBIE47W.css
+                |-- Signin_Auth-icO0AHj2.js
+                |-- Template ImagesTemplateIMG-DHgef6HD.png
+                |-- Templete-ng_L5o22.js
+                |-- TempleteDash-BXNEYrhB.js
+                |-- TempleteEdit-Bcj_7LrE.js
+                |-- TempleteEdit-D_bpIU1j.css
+                |-- dayjsConfig-C_ACzzqD.js
+                |-- extractUniqueElements-BE9Ekn4P.js
+                |-- index-1dJBMb1S.js
+                |-- index-BbY9fkgA.js
+                |-- index-BlA-VN7q.js
+                |-- index-Bs8bVgtG.js
+                |-- index-C7CicfpT.css
+                |-- index-CwOAVtDj.js
+                |-- react-toastify-BTGsrsBX.css
+                |-- react-toastify.esm-C37bckj3.js
+                |-- sign-BgsH1KkZ.jpg
+                |-- sign2-D4mO_rwh.jpg
+            |-- fonts
+                |-- NotoSansJP-Regular.otf
+                |-- NotoSerifJP-Regular.otf
+            |-- index.html
+            |-- pdf.worker.mjs
+    |-- templates
+        |-- __init__.py
+        |-- pages
+            |-- __init__.py
+    |-- www
+        |-- __pycache__
+            |-- esignDash.cpython-311.pyc
+        |-- esignDash.html
+        |-- esignDash.py
+|-- license.txt
+|-- package-lock.json
+|-- package.json
+|-- pyproject.toml

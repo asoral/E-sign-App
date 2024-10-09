@@ -1,0 +1,1064 @@
+templete code 
+import React, { useState, useEffect, useRef } from 'react';
+import Moveable from 'react-moveable';
+import { splitPDF } from './PdfLibOwn/GetPages';
+import { pdfToBase64 } from './PdfLibOwn/PDFtoBase64';
+import * as pdfjsLib from 'pdfjs-dist/build/pdf';
+import 'pdfjs-dist/build/pdf.worker.js';
+// import './Template.css';
+
+interface ComponentData {
+  id: number;
+  type: 'text' | 'image';
+  content?: string;
+  value: string;
+  position: { top: number; left: number };
+  size: { width: number; height: number };
+  name: string;
+  fontSize?: number;
+  assign?: string[];
+}
+
+const Templete: React.FC = () => {
+  const [base64PDF, setBase64PDF] = useState<string | null>(null);
+  const [pages, setPages] = useState<Array<{ page: number; data: string }> | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [zoomLevel, setZoomLevel] = useState<number>(1);
+  const [components, setComponents] = useState<ComponentData[]>([]);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [target, setTarget] = useState<HTMLElement | null>(null);
+  const [textFieldValue, setTextFieldValue] = useState<string>('');
+  const [userInput, setUserInput] = useState<string>('');
+
+  const pageRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const borderDivRef = useRef<HTMLDivElement | null>(null);
+  const workspaceRef = useRef<HTMLDivElement | null>(null);
+  const textInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (pages) {
+      renderPage(pages[currentPage - 1].data, pageRefs.current[currentPage - 1]);
+    }
+  }, [pages, currentPage, zoomLevel]);
+
+  useEffect(() => {
+    if (selectedId !== null) {
+      const selectedElement = document.querySelector(`[data-id="${selectedId}"]`);
+      setTarget(selectedElement as HTMLElement);
+      const selectedComponent = components.find((c) => c.id === selectedId);
+      if (selectedComponent?.type === 'text') {
+        setTextFieldValue(selectedComponent.content || '');
+        textInputRef.current?.focus();
+      }
+    }
+  }, [selectedId, components]);
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const base64String = await pdfToBase64(file);
+      setBase64PDF(base64String);
+      const result = await splitPDF(base64String);
+      setPages(result);
+      setCurrentPage(1);
+    }
+  };
+
+  const renderPage = async (pageData: string, container: HTMLDivElement | null) => {
+    if (container) {
+      const pdf = await pdfjsLib.getDocument({ data: atob(pageData) }).promise;
+      const page = await pdf.getPage(1);
+      const viewport = page.getViewport({ scale: zoomLevel });
+
+      container.innerHTML = '';
+
+      container.style.width = `${viewport.width}px`;
+      container.style.height = `${viewport.height}px`;
+      container.style.position = 'relative';
+
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      if (context) {
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        container.appendChild(canvas);
+
+        const renderContext = {
+          canvasContext: context,
+          viewport: viewport,
+        };
+        await page.render(renderContext).promise;
+
+        const borderDiv = document.createElement('div');
+        borderDiv.style.position = 'absolute';
+        borderDiv.style.top = '0';
+        borderDiv.style.left = '0';
+        borderDiv.style.width = `${viewport.width}px`;
+        borderDiv.style.height = `${viewport.height}px`;
+        borderDiv.style.border = '2px solid green';
+        borderDivRef.current = borderDiv;
+        container.appendChild(borderDiv);
+      }
+    }
+  };
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+  const goToNextPage = () => {
+    if (pages && currentPage < pages.length) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const zoomIn = () => {
+    setZoomLevel((prevZoomLevel) => prevZoomLevel + 0.2);
+  };
+
+  const zoomOut = () => {
+    setZoomLevel((prevZoomLevel) => Math.max(0.2, prevZoomLevel - 0.2));
+  };
+
+  const addComponent = (type: 'text' | 'image') => {
+    const newComponent: ComponentData = {
+      id: Date.now(),
+      type,
+      name: `${type}-${Date.now()}`,
+      position: { top: 50, left: 50 },
+      size: { width: 100, height: 100 },
+      fontSize: 16,
+      value: '',
+      assign: [],
+      content: type === 'text' ? '' : undefined,
+    }; 
+    setComponents([...components, newComponent]);
+  };
+
+  const updateComponentPosition = (id: number, top: number, left: number) => {
+    setComponents((prevComponents) =>
+      prevComponents.map((component) =>
+        component.id === id
+          ? { ...component, position: { top, left } }
+          : component
+      )
+    );
+  };
+
+  const updateComponentSize = (id: number, width: number, height: number) => {
+    setComponents((prevComponents) =>
+      prevComponents.map((component) =>
+        component.id === id
+          ? { ...component, size: { width, height } }
+          : component
+      )
+    );
+  };
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newText = e.target.value;
+    setTextFieldValue(newText);
+    if (selectedId !== null) {
+      setComponents((prevComponents) =>
+        prevComponents.map((component) =>
+          component.id === selectedId ? { ...component, content: newText, value: newText } : component
+        )
+      );
+    }
+  };
+
+  const handleDeselect = (e: React.MouseEvent) => {
+    if (!(e.target as HTMLElement).closest('.component')) {
+      setSelectedId(null);
+    }
+  };
+
+  const changeTextSize = (increment: boolean) => {
+    if (selectedId !== null) {
+      setComponents((prevComponents) =>
+        prevComponents.map((component) =>
+          component.id === selectedId
+            ? {
+                ...component,
+                fontSize: (component.fontSize || 16) + (increment ? 2 : -2),
+              }
+            : component
+        )
+      );
+    }
+  };
+
+  const deleteComponent = () => {
+    if (selectedId !== null) {
+      setComponents((prevComponents) =>
+        prevComponents.filter((component) => component.id !== selectedId)
+      );
+      setSelectedId(null);
+    }
+  };
+
+  const logComponentData = () => {
+    const data = components.map(({ id, type, content, value, position, size, name, fontSize, assign }) => ({
+      id,
+      type,
+      content,
+      value,
+      position,
+      size,
+      name,
+      fontSize,
+      assign
+    }));
+    // // console.log(JSON.stringify(data, null, 2));
+  };
+
+  return (
+    <div className="h-screen w-full flex flex-col items-center justify-center">
+      <div className="control-buttons">
+        <button onClick={() => addComponent('text')}>Add Text</button>
+        <button onClick={() => addComponent('image')}>Add Image</button>
+        {selectedId && (
+          <>
+            <button onClick={() => changeTextSize(true)}>Increase Text Size</button>
+            <button onClick={() => changeTextSize(false)}>Decrease Text Size</button>
+            <button onClick={deleteComponent}>Delete Component</button>
+          </>
+        )}
+        <button onClick={logComponentData}>Log Component Data</button>
+      </div>
+      {selectedId && (
+        <input
+          ref={textInputRef}
+          type="text"
+          value={textFieldValue}
+          onChange={handleTextChange}
+          placeholder="Edit text here"
+        />
+      )}
+      <div className="flex flex-row w-full h-full">
+        <div id="editorDivArea" className="flex flex-col items-center justify-center gap-2 p-3 min-w-[100vh] max-w-[100vh] h-full border border-blue-500">
+          {!pages && (
+            <div className="flex flex-col items-center">
+              <input
+                type="file"
+                accept="application/pdf"
+                onChange={handleFileChange}
+                className="bg-gray-100 text-[#283C42] border-1 border-[#283C42] px-4 py-2 rounded hover:bg-[#283C42] hover:text-white hover:border-white transition-colors duration-300 mb-4"
+              />
+            </div>
+          )}
+          {pages && (
+            <>
+              <div id="pdf-renderer" className="relative w-full h-full">
+                {pages.map((page, index) => (
+                  <div
+                    key={index}
+                    ref={(el) => (pageRefs.current[index] = el)}
+                    style={{
+                      display: index + 1 === currentPage ? 'block' : 'none',
+                    }}
+                  />
+                ))}
+                {components.map((component) => (
+                  <div
+                    key={component.id}
+                    data-id={component.id}
+                    className={`component absolute ${
+                      selectedId === component.id ? 'selected' : ''
+                    }`}
+                    style={{
+                      top: component.position.top,
+                      left: component.position.left,
+                      width: component.size.width,
+                      height: component.size.height,
+                      fontSize: component.fontSize,
+                      cursor: 'move',
+                    }}
+                    onMouseDown={() => setSelectedId(component.id)}
+                  >
+                    {component.type === 'text' && (
+                      <input
+                        type="text"
+                        value={component.value}
+                        onChange={(e) => setUserInput(e.target.value)}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          fontSize: component.fontSize,
+                          border: '1px solid transparent',
+                          backgroundColor: 'transparent',
+                        }}
+                      />
+                    )}
+                    {component.type === 'image' && (
+                      <img
+                        src={component.content}
+                        alt="Uploaded"
+                        style={{ width: '100%', height: '100%' }}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+              <Moveable
+                target={target}
+                draggable
+                resizable
+                onDrag={({ target, left, top }) => {
+                  if (target) {
+                    const id = parseInt(target.getAttribute('data-id')!, 10);
+                    updateComponentPosition(id, top, left);
+                  }
+                }}
+                onResize={({ target, width, height }) => {
+                  if (target) {
+                    const id = parseInt(target.getAttribute('data-id')!, 10);
+                    updateComponentSize(id, width, height);
+                  }
+                }}
+              />
+              <div className="flex justify-center space-x-4 mt-4">
+                <button
+                  onClick={goToPreviousPage}
+                  disabled={currentPage === 1}
+                  className={`px-4 py-2 rounded ${
+                    currentPage === 1
+                      ? 'bg-gray-300 cursor-not-allowed'
+                      : 'bg-blue-500 text-white hover:bg-blue-700'
+                  }`}
+                >
+                  Previous Page
+                </button>
+                <button
+                  onClick={goToNextPage}
+                  disabled={pages && currentPage === pages.length}
+                  className={`px-4 py-2 rounded ${
+                    pages && currentPage === pages.length
+                      ? 'bg-gray-300 cursor-not-allowed'
+                      : 'bg-blue-500 text-white hover:bg-blue-700'
+                  }`}
+                >
+                  Next Page
+                </button>
+                <button
+                  onClick={zoomOut}
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+                >
+                  Zoom Out
+                </button>
+                <button
+                  onClick={zoomIn}
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+                >
+                  Zoom In
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+        <div id="currentPDFDiv" className="flex flex-col items-center justify-center gap-2 p-3 min-w-[100vh] max-w-[100vh] h-full border border-blue-500">
+          {pages && (
+            <>
+              <div id="pdf-renderer" className="relative w-full h-full">
+                {pages.map((page, index) => (
+                  <div
+                    key={index}
+                    ref={(el) => (pageRefs.current[index] = el)}
+                    style={{
+                      display: index + 1 === currentPage ? 'block' : 'none',
+                    }}
+                  />
+                ))}
+                {components.map((component) => (
+                  <div
+                    key={component.id}
+                    data-id={component.id}
+                    className={`component absolute ${
+                      selectedId === component.id ? 'selected' : ''
+                    }`}
+                    style={{
+                      top: component.position.top,
+                      left: component.position.left,
+                      width: component.size.width,
+                      height: component.size.height,
+                      fontSize: component.fontSize,
+                      cursor: 'move',
+                    }}
+                    onMouseDown={() => setSelectedId(component.id)}
+                  >
+                    {component.type === 'text' && (
+                      <input
+                        type="text"
+                        value={component.value}
+                        onChange={(e) => setUserInput(e.target.value)}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          fontSize: component.fontSize,
+                          border: '1px solid transparent',
+                          backgroundColor: 'transparent',
+                        }}
+                      />
+                    )}
+                    {component.type === 'image' && (
+                      <img
+                        src={component.content}
+                        alt="Uploaded"
+                        style={{ width: '100%', height: '100%' }}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+              <Moveable
+                target={target}
+                draggable
+                resizable
+                onDrag={({ target, left, top }) => {
+                  if (target) {
+                    const id = parseInt(target.getAttribute('data-id')!, 10);
+                    updateComponentPosition(id, top, left);
+                  }
+                }}
+                onResize={({ target, width, height }) => {
+                  if (target) {
+                    const id = parseInt(target.getAttribute('data-id')!, 10);
+                    updateComponentSize(id, width, height);
+                  }
+                }}
+              />
+              <div className="flex justify-center space-x-4 mt-4">
+                <button
+                  onClick={goToPreviousPage}
+                  disabled={currentPage === 1}
+                  className={`px-4 py-2 rounded ${
+                    currentPage === 1
+                      ? 'bg-gray-300 cursor-not-allowed'
+                      : 'bg-blue-500 text-white hover:bg-blue-700'
+                  }`}
+                >
+                  Previous Page
+                </button>
+                <button
+                  onClick={goToNextPage}
+                  disabled={pages && currentPage === pages.length}
+                  className={`px-4 py-2 rounded ${
+                    pages && currentPage === pages.length
+                      ? 'bg-gray-300 cursor-not-allowed'
+                      : 'bg-blue-500 text-white hover:bg-blue-700'
+                  }`}
+                >
+                  Next Page
+                </button>
+                <button
+                  onClick={zoomOut}
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+                >
+                  Zoom Out
+                </button>
+                <button
+                  onClick={zoomIn}
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+                >
+                  Zoom In
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Templete;
+
+
+
+
+
+
+
+//Version 2 Better ----------______________-------------___________------------__________------------___________------------_________-----------________------------_________----
+
+import React, { useState, useEffect, useRef } from 'react';
+import Moveable from 'react-moveable';
+import { splitPDF } from './PdfLibOwn/GetPages';
+import { pdfToBase64 } from './PdfLibOwn/PDFtoBase64';
+import * as pdfjsLib from 'pdfjs-dist/build/pdf';
+import 'pdfjs-dist/build/pdf.worker.js';
+// import './Template.css';
+
+interface ComponentData {
+  id: number;
+  type: 'text' | 'image';
+  content?: string;
+  value: string;
+  position: { top: number; left: number };
+  size: { width: number; height: number };
+  name: string;
+  fontSize?: number;
+  assign?: string[];
+}
+
+const Templete: React.FC = () => {
+  const [base64PDF, setBase64PDF] = useState<string | null>(null);
+  const [pages, setPages] = useState<Array<{ page: number; data: string }> | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [zoomLevel, setZoomLevel] = useState<number>(1);
+  const [components, setComponents] = useState<ComponentData[]>([]);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [target, setTarget] = useState<HTMLElement | null>(null);
+  const [textFieldValue, setTextFieldValue] = useState<string>('');
+  const textInputRef = useRef<HTMLInputElement | null>(null);
+  const pageRefs = useRef<Array<HTMLDivElement | null>>([]);
+
+  useEffect(() => {
+    if (pages) {
+      renderPage(pages[currentPage - 1].data, pageRefs.current[currentPage - 1]);
+    }
+  }, [pages, currentPage, zoomLevel]);
+
+  useEffect(() => {
+    if (selectedId !== null) {
+      const selectedElement = document.querySelector(`[data-id="${selectedId}"]`);
+      setTarget(selectedElement as HTMLElement);
+      const selectedComponent = components.find((c) => c.id === selectedId);
+      if (selectedComponent?.type === 'text') {
+        setTextFieldValue(selectedComponent.content || '');
+        textInputRef.current?.focus();
+      }
+    }
+  }, [selectedId, components]);
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const base64String = await pdfToBase64(file);
+      setBase64PDF(base64String);
+      const result = await splitPDF(base64String);
+      setPages(result);
+      setCurrentPage(1);
+    }
+  };
+
+  const renderPage = async (pageData: string, container: HTMLDivElement | null) => {
+    if (container) {
+      const pdf = await pdfjsLib.getDocument({ data: atob(pageData) }).promise;
+      const page = await pdf.getPage(1);
+      const viewport = page.getViewport({ scale: zoomLevel });
+
+      container.innerHTML = '';
+      container.style.width = `${viewport.width}px`;
+      container.style.height = `${viewport.height}px`;
+
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      if (context) {
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        container.appendChild(canvas);
+
+        const renderContext = {
+          canvasContext: context,
+          viewport: viewport,
+        };
+        await page.render(renderContext).promise;
+      }
+    }
+  };
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const goToNextPage = () => {
+    if (pages && currentPage < pages.length) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const zoomIn = () => {
+    setZoomLevel((prevZoomLevel) => prevZoomLevel + 0.2);
+  };
+
+  const zoomOut = () => {
+    setZoomLevel((prevZoomLevel) => Math.max(0.2, prevZoomLevel - 0.2));
+  };
+
+  const addComponent = (type: 'text' | 'image') => {
+    const newComponent: ComponentData = {
+      id: Date.now(),
+      type,
+      name: `${type}-${Date.now()}`,
+      position: { top: 50, left: 50 },
+      size: { width: 100, height: 100 },
+      fontSize: 16,
+      value: '',
+      assign: [],
+      content: type === 'text' ? '' : undefined,
+    };
+    setComponents([...components, newComponent]);
+  };
+
+  const updateComponentPosition = (id: number, top: number, left: number) => {
+    setComponents((prevComponents) =>
+      prevComponents.map((component) =>
+        component.id === id
+          ? { ...component, position: { top, left } }
+          : component
+      )
+    );
+  };
+
+  const updateComponentSize = (id: number, width: number, height: number) => {
+    setComponents((prevComponents) =>
+      prevComponents.map((component) =>
+        component.id === id
+          ? { ...component, size: { width, height } }
+          : component
+      )
+    );
+  };
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newText = e.target.value;
+    setTextFieldValue(newText);
+    if (selectedId !== null) {
+      setComponents((prevComponents) =>
+        prevComponents.map((component) =>
+          component.id === selectedId ? { ...component, content: newText, value: newText } : component
+        )
+      );
+    }
+  };
+
+  const handleDeselect = (e: React.MouseEvent) => {
+    if (!(e.target as HTMLElement).closest('.component')) {
+      setSelectedId(null);
+    }
+  };
+
+  const changeTextSize = (increment: boolean) => {
+    if (selectedId !== null) {
+      setComponents((prevComponents) =>
+        prevComponents.map((component) =>
+          component.id === selectedId
+            ? {
+                ...component,
+                fontSize: (component.fontSize || 16) + (increment ? 2 : -2),
+              }
+            : component
+        )
+      );
+    }
+  };
+
+  const deleteComponent = () => {
+    if (selectedId !== null) {
+      setComponents((prevComponents) =>
+        prevComponents.filter((component) => component.id !== selectedId)
+      );
+      setSelectedId(null);
+    }
+  };
+
+  const logComponentData = () => {
+    const data = components.map(({ id, type, content, value, position, size, name, fontSize, assign }) => ({
+      id,
+      type,
+      content,
+      value,
+      position,
+      size,
+      name,
+      fontSize,
+      assign
+    }));
+    // // console.log(JSON.stringify(data, null, 2));
+  };
+
+  return (
+    <div className="h-screen w-full flex flex-col items-center justify-center" onClick={handleDeselect}>
+      <div className="control-buttons">
+        <button onClick={() => addComponent('text')}>Add Text</button>
+        <button onClick={() => addComponent('image')}>Add Image</button>
+        {selectedId && (
+          <>
+            <button onClick={() => changeTextSize(true)}>Increase Text Size</button>
+            <button onClick={() => changeTextSize(false)}>Decrease Text Size</button>
+            <button onClick={deleteComponent}>Delete Component</button>
+          </>
+        )}
+        <button onClick={logComponentData}>Log Component Data</button>
+      </div>
+      {selectedId && (
+        <input
+          ref={textInputRef}
+          type="text"
+          value={textFieldValue}
+          onChange={handleTextChange}
+          placeholder="Edit text here"
+        />
+      )}
+      <div className="flex flex-row w-full h-full">
+        <div id="editorDivArea" className="flex flex-col items-center justify-center gap-2 p-3 min-w-[100vh] max-w-[100vh] h-full border border-blue-500">
+          {!pages && (
+            <div className="flex flex-col items-center">
+              <input
+                type="file"
+                accept="application/pdf"
+                onChange={handleFileChange}
+                className="bg-gray-100 text-[#283C42] border-1 border-[#283C42] px-4 py-2 rounded hover:bg-[#283C42] hover:text-white hover:border-white transition-colors duration-300 mb-4"
+              />
+            </div>
+          )}
+          {pages && (
+            <>
+              <div id="pdf-renderer" className="relative w-full h-full">
+                {pages.map((page, index) => (
+                  <div
+                    key={index}
+                    ref={(el) => (pageRefs.current[index] = el)}
+                    style={{
+                      display: index + 1 === currentPage ? 'block' : 'none',
+                    }}
+                  />
+                ))}
+                {components.map((component) => (
+                  <div
+                    key={component.id}
+                    data-id={component.id}
+                    className={`component absolute ${
+                      selectedId === component.id ? 'selected' : ''
+                    }`}
+                    style={{
+                      top: component.position.top,
+                      left: component.position.left,
+                      width: component.size.width,
+                      height: component.size.height,
+                      fontSize: component.fontSize,
+                      border: selectedId === component.id ? '2px solid red' : '1px solid blue',
+                      overflow: 'hidden',
+                    }}
+                    onMouseDown={() => setSelectedId(component.id)}
+                  >
+                    {component.type === 'text' ? (
+                      <div
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e) => {
+                          const newText = e.target.innerText;
+                          setComponents((prevComponents) =>
+                            prevComponents.map((comp) =>
+                              comp.id === component.id ? { ...comp, content: newText, value: newText } : comp
+                            )
+                          );
+                        }}
+                        dangerouslySetInnerHTML={{ __html: component.content || '' }}
+                      />
+                    ) : (
+                      <img
+                        src={component.value}
+                        alt="User uploaded"
+                        style={{ width: '100%', height: '100%' }}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+        {pages && (
+          <div className="sidebar flex flex-col items-center justify-start p-3 gap-2 border border-green-500">
+            <button onClick={goToPreviousPage}>Previous Page</button>
+            <button onClick={goToNextPage}>Next Page</button>
+            <button onClick={zoomIn}>Zoom In</button>
+            <button onClick={zoomOut}>Zoom Out</button>
+            <div className="page-number">
+              Page {currentPage} of {pages.length}
+            </div>
+          </div>
+        )}
+      </div>
+      {target && (
+        <Moveable
+          target={target}
+          container={document.getElementById('pdf-renderer')}
+          origin={true}
+          edge={false}
+          throttleDrag={0}
+          throttleResize={0}
+          draggable={true}
+          resizable={true}
+          keepRatio={false}
+          onDrag={({ target, left, top }) => {
+            const id = Number(target.getAttribute('data-id'));
+            updateComponentPosition(id, top, left);
+          }}
+          onResize={({ target, width, height }) => {
+            const id = Number(target.getAttribute('data-id'));
+            updateComponentSize(id, width, height);
+          }}
+        />
+      )}
+    </div>
+  );
+};
+
+export default Templete;
+
+
+version 3 Not tested yet 
+import React, { useState, useEffect, useRef } from 'react';
+import * as pdfjsLib from 'pdfjs-dist/build/pdf';
+import 'pdfjs-dist/build/pdf.worker.js';
+import Moveable from 'react-moveable';
+import { LeftCircleOutlined, RightCircleOutlined, ZoomOutOutlined, ZoomInOutlined } from '@ant-design/icons';
+import { Divider } from 'antd';
+import { pdfToBase64 } from './PdfLibOwn/PDFtoBase64';
+import { splitPDF } from './PdfLibOwn/GetPages';
+
+function Template() {
+  const [base64PDF, setBase64PDF] = useState<string | null>(null);
+  const [pages, setPages] = useState<Array<{ page: number; data: string }> | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [zoomLevel, setZoomLevel] = useState<number>(0.5);
+  const [zoomStatus, setZoomStatus] = useState<boolean>(false);
+  const pageRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const workspaceRef = useRef<HTMLDivElement>(null);
+  const moveableRef = useRef<Moveable>(null);
+
+  useEffect(() => {
+    if (pages) {
+      renderPage(pages[currentPage - 1].data, pageRefs.current[currentPage - 1]);
+    }
+  }, [pages, currentPage, zoomLevel]);
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const base64String = await pdfToBase64(file);
+      setBase64PDF(base64String);
+      const result = await splitPDF(base64String);
+      setPages(result);
+      setCurrentPage(1);
+    }
+  };
+
+  const renderPage = async (pageData: string, container: HTMLDivElement | null) => {
+    if (container) {
+      const pdf = await pdfjsLib.getDocument({ data: atob(pageData) }).promise;
+      const page = await pdf.getPage(1);
+      const viewport = page.getViewport({ scale: zoomLevel });
+
+      container.innerHTML = '';
+
+      container.style.width = `${viewport.width}px`;
+      container.style.height = `${viewport.height}px`;
+      container.style.position = 'relative';
+
+      // Creating workspace div
+      const workspaceDiv = document.createElement('div');
+      workspaceDiv.className = 'workspace';
+      workspaceDiv.ref = workspaceRef;
+      workspaceDiv.onclick = handleDeselect;
+      container.appendChild(workspaceDiv);
+
+      // Creating border div
+      const borderDiv = document.createElement('div');
+      borderDiv.style.position = 'absolute';
+      borderDiv.style.top = '0';
+      borderDiv.style.left = '0';
+      borderDiv.style.width = `${viewport.width}px`;
+      borderDiv.style.height = `${viewport.height}px`;
+      borderDiv.style.border = '2px solid green';
+      workspaceDiv.appendChild(borderDiv);
+
+      // Example of adding a draggable component
+      const draggableDiv = document.createElement('div');
+      draggableDiv.className = 'component image'; // Example class for a draggable image component
+      draggableDiv.textContent = 'Drag me!';
+      draggableDiv.style.position = 'absolute';
+      draggableDiv.style.top = '50px';
+      draggableDiv.style.left = '50px';
+      workspaceDiv.appendChild(draggableDiv);
+
+      // Initialize Moveable for draggable components
+      if (moveableRef.current) {
+        const moveable = moveableRef.current;
+        moveable.bindDraggable(draggableDiv);
+      }
+
+      // Creating canvas
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      if (context) {
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        workspaceDiv.appendChild(canvas);
+
+        const renderContext = {
+          canvasContext: context,
+          viewport: viewport,
+        };
+        await page.render(renderContext).promise;
+      }
+    }
+    setZoomStatus(false);
+  };
+
+  const handleDeselect = () => {
+    // Implement functionality when workspace is clicked (deselection logic, etc.)
+    // // console.log('Workspace clicked. Deselect logic can be implemented here.');
+  };
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const goToNextPage = () => {
+    if (pages && currentPage < pages.length) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const zoomIn = () => {
+    setZoomStatus(true);
+    setZoomLevel((prevZoomLevel) => prevZoomLevel + 0.1);
+  };
+
+  const zoomOut = () => {
+    setZoomStatus(true);
+    setZoomLevel((prevZoomLevel) => Math.max(0.2, prevZoomLevel - 0.1));
+  };
+
+  return (
+    <div className="h-screen w-full flex flex-col items-center justify-center">
+      <div className="flex flex-row w-full h-full">
+        <div id="editorDivArea" className="flex flex-col items-center justify-center gap-2 p-3 min-w-[100vh] max-w-[100vh] h-full border border-blue-500">
+          {!pages && (
+            <div className="flex flex-col items-center">
+              <input
+                type="file"
+                accept="application/pdf"
+                onChange={handleFileChange}
+                className="bg-gray-100 text-[#283C42] border-1 border-[#283C42] px-4 py-2 rounded hover:bg-[#283C42] hover:text-white hover:border-white transition-colors duration-300 mb-4"
+              />
+            </div>
+          )}
+          {pages && (
+            <>
+              <div className="flex flex-row justify-between w-full mb-2 px-4">
+                <button
+                  onClick={goToPreviousPage}
+                  disabled={currentPage === 1}
+                  className="bg-gray-100 text-[#283C42] border-1 border-[#283C42] px-4 py-2 rounded hover:bg-[#283C42] hover:text-white hover:border-white transition-colors duration-300"
+                >
+                  <LeftCircleOutlined />
+                </button>
+                <div className="flex flex-row items-center ">
+                  <button
+                    onClick={zoomOut}
+                    disabled={zoomStatus}
+                    className={`bg-gray-100 text-[#283C42] border-1 border-[#283C42] px-4 py-2 rounded transition-colors duration-300 mr-2 ${
+                      zoomStatus ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#283C42] hover:text-white hover:border-white'
+                    }`}
+                  >
+                    <ZoomOutOutlined />
+                  </button>
+                  <span className="text-sm font-semibold">Page {currentPage} / {pages?.length || 0}</span>
+                  <button
+                    onClick={zoomIn}
+                    disabled={zoomStatus}
+                    className={`bg-gray-100 text-[#283C42] border-1 border-[#283C42] px-4 py-2 rounded transition-colors duration-300 ${
+                      zoomStatus ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#283C42] hover:text-white hover:border-white'
+                    }`}
+                  >
+                    <ZoomInOutlined />
+                  </button>
+                </div>
+                <button
+                  onClick={goToNextPage}
+                  disabled={currentPage === (pages?.length || 0)}
+                  className="bg-gray-100 text-[#283C42] border-1 border-[#283C42] px-4 py-2 rounded hover:bg-[#283C42] hover:text-white hover:border-white transition-colors duration-300"
+                >
+                  <RightCircleOutlined />
+                </button>
+              </div>
+              <div className="w-full h-full overflow-y-auto flex justify-center items-center px-4 py-2">
+                {pages.map((page, index) => (
+                  <div
+                    key={index}
+                    className={`page-container ${index + 1 === currentPage ? 'block' : 'hidden'}`}
+                    ref={(ref) => (pageRefs.current[index] = ref)}
+                  >
+                    <div className="pdf-page border-purple-900 "></div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+        <div className="w-2/5 border flex flex-col">
+          <div className="p-2 w-full h-2/5 border min-w-[50vh] border-purple-500">
+            <Divider orientation="left" style={{ borderBlockColor: "#283C42", color: "#283C42" }}>
+              Template Control
+            </Divider>
+            <div className='pl-3 pr-3'>
+              <label className="block text-gray-700 text-xs font-bold mb-2">Name</label>
+              <div className="mt-2 flex space-x-1">
+                <input
+                  className="text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-1 px-2 text-xs"
+                  type="text"
+                />
+                <button className="bg-[#283C42] text-white font-bold py-1 px-2 text-xs rounded border-2 border-transparent hover:border-[#283C42] hover:bg-white hover:text-[#283C42] transition-colors duration-300">
+                  Save
+                </button>
+                <button className="bg-[#283C42] text-white font-bold py-1 px-2 text-xs rounded border-2 border-transparent hover:border-[#283C42] hover:bg-white hover:text-[#283C42] transition-colors duration-300">
+                  Load
+                </button>
+                <button className="bg-[#283C42] text-white font-bold py-1 px-2 text-xs rounded border-2 border-transparent hover:border-[#283C42] hover:bg-white hover:text-[#283C42] transition-colors duration-300">
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            <Divider orientation="left" style={{ borderBlockColor: "#283C42", color: "#283C42" }}>Components</Divider>
+            <div className='mt-2 flex space-x-1 gap-2'>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3V21M9 21H15M19 6V3H5V6" stroke="#283C42" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+
+              <svg width="26" height="25" viewBox="0 -2 20 20" version="1.1">
+                <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+                  <g id="Dribbble-Light-Preview" transform="translate(-380.000000, -3881.000000)" fill="#283C42">
+                    <g id="icons" transform="translate(56.000000, 160.000000)">
+                      <path d="M336,3725.5 C336,3724.948 336.448,3724.5 337,3724.5 C337.552,3724.5 338,3724.948 338,3725.5 C338,3726.052 337.552,3726.5 337,3726.5 C336.448,3726.5 336,3726.052 336,3725.5 L336,3725.5 Z M340,3733 L328,3733 L332.518,3726.812 L335.354,3730.625 L336.75,3728.75 L340,3733 Z M326,3735 L342,3735 L342,3723 L326,3723 L326,3735 Z M324,3737 L344,3737 L344,3721 L324,3721 L324,3737 Z" id="image_picture-[#972]"></path>
+                    </g>
+                  </g>
+                </g>
+              </svg>
+            </div>
+
+
+          </div>
+          <div className="p-2 w-full h-3/5 border border-yellow-500">
+            <Divider orientation="left" style={{ borderBlockColor: "#283C42", color: "#283C42" }}>Utility</Divider>
+            <div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Template;

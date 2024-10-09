@@ -1,0 +1,31 @@
+{
+  "name": "esign_app",
+  "version": "1.0.0",
+  "description": "Esign doc app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "cd esignDash && yarn install",
+    "dev": "cd esignDash && yarn dev",
+    "build": "cd esignDash && yarn build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@gsap/react": "^2.1.1",
+    "@tailwindcss/line-clamp": "^0.4.4",
+    "axios": "^1.7.2",
+    "dayjs": "^1.11.13",
+    "gsap": "^3.12.5",
+    "pdfjs-dist": "^3.11.174",
+    "prop-types": "^15.8.1",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
+    "react-signature-canvas": "^1.0.6",
+    "svg2img": "^1.0.0-beta.2"
+  },
+  "devDependencies": {
+    "@types/react-signature-canvas": "^1.0.5"
+  }
+}

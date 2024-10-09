@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/assets/esign_app/esignDash/Dexciss_logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>esign</title>
+    <script type="module" crossorigin src="/assets/esign_app/esignDash/assets/index-Bs8bVgtG.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/esign_app/esignDash/assets/index-C7CicfpT.css">
+  </head>
+  <body>
+    <!-- {{ boot }}
+    {{var11}} -->
+    <div id="root"></div>
+    <script>window.csrf_token = '{{ frappe.session.csrf_token }}';
+
+      if (!window.frappe) window.frappe = {};
+      
+      // frappe.boot = JSON.parse({{ boot }});
+  
+    </script>
+  </body>
+</html>

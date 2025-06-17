@@ -1,0 +1,110 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:openssl_key-{##########}-utctime-{timestamp}",
+ "creation": "2025-01-02 15:58:21.743508",
+ "default_view": "List",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "openssl_name",
+  "username",
+  "key_pem",
+  "ca_cert_pem",
+  "csr_pem",
+  "column_break_smdi",
+  "owner_email",
+  "ca_key_pem",
+  "cert_pem",
+  "openssl_conf"
+ ],
+ "fields": [
+  {
+   "fieldname": "openssl_name",
+   "fieldtype": "Small Text",
+   "label": "OpenSSL Name"
+  },
+  {
+   "fieldname": "username",
+   "fieldtype": "Text",
+   "label": "Username"
+  },
+  {
+   "fieldname": "key_pem",
+   "fieldtype": "Text",
+   "in_list_view": 1,
+   "label": "key_pem"
+  },
+  {
+   "fieldname": "ca_cert_pem",
+   "fieldtype": "Text",
+   "label": "ca_cert_pem"
+  },
+  {
+   "fieldname": "csr_pem",
+   "fieldtype": "Text",
+   "label": "csr_pem"
+  },
+  {
+   "fieldname": "column_break_smdi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "owner_email",
+   "fieldtype": "Text",
+   "label": "Owner Email"
+  },
+  {
+   "fieldname": "ca_key_pem",
+   "fieldtype": "Text",
+   "label": "ca_key_pem"
+  },
+  {
+   "fieldname": "cert_pem",
+   "fieldtype": "Text",
+   "label": "cert_pem"
+  },
+  {
+   "fieldname": "openssl_conf",
+   "fieldtype": "Text",
+   "label": "openssl_conf"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-01-02 16:21:05.144815",
+ "modified_by": "Administrator",
+ "module": "Esign App",
+ "name": "openssl_keys",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Guest",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

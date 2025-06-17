@@ -1,0 +1,194 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{document_title}-{######}",
+ "creation": "2024-08-08 11:48:33.652744",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "document_title",
+  "template_title",
+  "owner_email",
+  "assigned_users",
+  "document_created_at",
+  "opensslusedlist",
+  "validated_pdf",
+  "document_subject_column",
+  "document_subject",
+  "description",
+  "document_json_data",
+  "base_pdf_datad",
+  "document_status_mail",
+  "isnoteditable",
+  "iscompleted",
+  "ismerged",
+  "issignedverified",
+  "reject_panel_section",
+  "rejected_by",
+  "column_break_vptj",
+  "isrejected",
+  "section_break_eors",
+  "reject_reason"
+ ],
+ "fields": [
+  {
+   "fieldname": "document_title",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Document Title",
+   "reqd": 1
+  },
+  {
+   "fieldname": "template_title",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Template Title",
+   "reqd": 1
+  },
+  {
+   "fieldname": "owner_email",
+   "fieldtype": "Small Text",
+   "label": "Owner Email"
+  },
+  {
+   "fieldname": "assigned_users",
+   "fieldtype": "JSON",
+   "label": "Assigned Users"
+  },
+  {
+   "fieldname": "document_created_at",
+   "fieldtype": "Small Text",
+   "label": "Document Created at"
+  },
+  {
+   "fieldname": "document_subject_column",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "document_subject",
+   "fieldtype": "Small Text",
+   "label": "Document Subject"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text Editor",
+   "label": "Description"
+  },
+  {
+   "fieldname": "document_json_data",
+   "fieldtype": "JSON",
+   "label": "Document JSON data"
+  },
+  {
+   "fieldname": "base_pdf_datad",
+   "fieldtype": "JSON",
+   "label": "base pdf data"
+  },
+  {
+   "default": "0",
+   "fieldname": "isnoteditable",
+   "fieldtype": "Check",
+   "label": "isNotEditable"
+  },
+  {
+   "default": "0",
+   "fieldname": "iscompleted",
+   "fieldtype": "Check",
+   "label": "isCompleted"
+  },
+  {
+   "fieldname": "opensslusedlist",
+   "fieldtype": "JSON",
+   "label": "OpenSSLUsedList"
+  },
+  {
+   "fieldname": "validated_pdf",
+   "fieldtype": "Text Editor",
+   "label": "Validated PDF"
+  },
+  {
+   "default": "0",
+   "fieldname": "ismerged",
+   "fieldtype": "Check",
+   "label": "isMerged"
+  },
+  {
+   "default": "0",
+   "fieldname": "issignedverified",
+   "fieldtype": "Check",
+   "label": "isSignedVerified"
+  },
+  {
+   "default": "0",
+   "fieldname": "isrejected",
+   "fieldtype": "Check",
+   "label": "isRejected"
+  },
+  {
+   "fieldname": "reject_reason",
+   "fieldtype": "Text Editor",
+   "label": "Reject Reason"
+  },
+  {
+   "fieldname": "reject_panel_section",
+   "fieldtype": "Section Break",
+   "label": "Reject Panel"
+  },
+  {
+   "fieldname": "column_break_vptj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "rejected_by",
+   "fieldtype": "Small Text",
+   "label": "Rejected By"
+  },
+  {
+   "fieldname": "section_break_eors",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "document_status_mail",
+   "fieldtype": "JSON",
+   "label": "Document Status Mail"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-06-04 16:58:47.797453",
+ "modified_by": "Administrator",
+ "module": "Esign App",
+ "name": "DocumentList",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Guest",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

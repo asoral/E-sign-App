@@ -1,0 +1,37 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-06-06 17:06:53.727738",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "doctype_name"
+ ],
+ "fields": [
+  {
+   "fieldname": "doctype_name",
+   "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Doctype Name",
+   "options": "DocType"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-06-06 17:09:56.461044",
+ "modified_by": "Administrator",
+ "module": "Esign App",
+ "name": "Template Selected Doctypes",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

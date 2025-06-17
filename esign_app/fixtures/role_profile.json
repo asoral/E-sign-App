@@ -1,0 +1,149 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2024-06-25 16:26:14.976082",
+  "name": "esign",
+  "role_profile": "esign",
+  "roles": [
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Accounts Manager"
+   },
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Accounts User"
+   },
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Blogger"
+   },
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Dashboard Manager"
+   },
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Inbox User"
+   },
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Knowledge Base Contributor"
+   },
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Knowledge Base Editor"
+   },
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Maintenance Manager"
+   },
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Maintenance User"
+   },
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Newsletter Manager"
+   },
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Prepared Report User"
+   },
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Purchase Manager"
+   },
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Purchase Master Manager"
+   },
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Purchase User"
+   },
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Report Manager"
+   },
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Sales Manager"
+   },
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Sales Master Manager"
+   },
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Sales User"
+   },
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Script Manager"
+   },
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "System Manager"
+   },
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Translator"
+   },
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Website Manager"
+   },
+   {
+    "parent": "esign",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Workspace Manager"
+   }
+  ]
+ }
+]

@@ -1,0 +1,20 @@
+.class1{
+    border: solid;
+    width: 300px;
+}
+
+.class2{
+    border: 0px solid;
+    background-color: blue;
+    width:300px;
+    overflow:hidden;
+    max-height: 0px;
+    transition: 1s all;
+}
+
+.class1:hover ~.class2{
+    /* height:500px; */
+    
+    max-height: 500px;
+    background-color: blueviolet;
+}

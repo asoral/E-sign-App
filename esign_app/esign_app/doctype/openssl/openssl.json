@@ -1,0 +1,140 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:openssl_data-{##########}-utctime-{timestamp}",
+ "creation": "2024-12-24 18:17:22.585954",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "openssl_name",
+  "country",
+  "state",
+  "city",
+  "organization",
+  "column_break_olmt",
+  "country_code",
+  "challenge_password",
+  "username",
+  "owner_email"
+ ],
+ "fields": [
+  {
+   "fieldname": "column_break_olmt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "bold": 1,
+   "fieldname": "country",
+   "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Country",
+   "options": "Country",
+   "reqd": 1
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "bold": 1,
+   "fetch_from": "country.code",
+   "fieldname": "country_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Country Code",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "bold": 1,
+   "fieldname": "city",
+   "fieldtype": "Data",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "City",
+   "reqd": 1
+  },
+  {
+   "fieldname": "state",
+   "fieldtype": "Data",
+   "label": "State",
+   "reqd": 1
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "bold": 1,
+   "fieldname": "organization",
+   "fieldtype": "Data",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Organization",
+   "reqd": 1
+  },
+  {
+   "fieldname": "challenge_password",
+   "fieldtype": "Data",
+   "label": "Challenge Password"
+  },
+  {
+   "fieldname": "username",
+   "fieldtype": "Small Text",
+   "label": "Username"
+  },
+  {
+   "fieldname": "owner_email",
+   "fieldtype": "Small Text",
+   "label": "Owner Email"
+  },
+  {
+   "fieldname": "openssl_name",
+   "fieldtype": "Small Text",
+   "label": "OpenSSL Name",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-01-02 16:27:26.348320",
+ "modified_by": "Administrator",
+ "module": "Esign App",
+ "name": "openssl",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Guest",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

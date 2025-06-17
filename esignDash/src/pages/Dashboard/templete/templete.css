@@ -1,0 +1,161 @@
+.templete-app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .control-buttons {
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    max-width: 200px;
+    margin-top: 60px;
+    margin-left: auto; 
+    margin-right: auto; 
+  }
+  .control-buttons-utilities {
+    margin-bottom: 10px;
+    display: grid; 
+    grid-template-columns: repeat(2, 100px);
+    gap: 10px; 
+    max-width: 200px; 
+    margin-top: 30px;
+    margin-left: auto; 
+    margin-right: auto; 
+  }
+
+  .editable-div {
+    direction: ltr; /* or rtl based on your requirements */
+    text-align: left; /* Ensure correct alignment */
+  }
+  
+  .right-templete
+  {
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    margin-top: 60px;
+    margin-left: 20%;
+  }
+  .templete-utility-btn
+  {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: left;
+  }
+  .templete-utility-btn-add-user
+  {
+    display: flex;
+    flex-direction: row;
+    align-items: left;
+    margin: 0;
+  }
+  
+  .workspace {
+    position: relative; 
+    width: 297;
+    height: 420;
+    border: 1px solid #ccc;
+    overflow: hidden;
+  }
+  
+  .component {
+    cursor: pointer;
+    /* border-radius: 4px; */
+    padding: 2px;
+    box-shadow: 0 0 0 1px #283C42;
+    overflow: hidden;
+    
+  }
+  
+  .component.text {
+    /* background-color: #f0f0f0; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .component.image {
+    background-color: transparent ;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .component.selected {
+    box-shadow: 0 0 0 2px #4af;
+  }
+  
+  .component img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .component input[type='file'] {
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  
+  .workspace input[type='text'] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+  }
+  
+  .workspace .moveable-control {
+    box-sizing: border-box;
+    z-index: 1000;
+  }
+  .templete-main-div
+  {
+    
+    display: grid;
+    grid-template-columns: 25% 50% 25%;
+  }
+
+
+
+  /* From Uiverse.io by SelfMadeSystem */ 
+.container {
+  cursor: pointer;
+}
+.container
+{
+  max-width: 40px;
+}
+
+.container input {
+  display: none;
+}
+
+.container svg {
+  overflow: visible;
+}
+
+.path {
+  fill: none;
+  stroke: white;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke-dasharray 0.5s ease, stroke-dashoffset 0.5s ease;
+  stroke-dasharray: 241 9999999;
+  stroke-dashoffset: 0;
+}
+
+.container input:checked ~ svg .path {
+  stroke-dasharray: 70.5096664428711 9999999;
+  stroke-dashoffset: -262.2723388671875;
+}

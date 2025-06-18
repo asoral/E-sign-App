@@ -35,6 +35,10 @@ app_include_js = "esign.bundle.js"
 doctype_js = {
     "openssl": "public/js/global_script.js"
 }
+extend_list_view_context = [
+    "esign_app.public.js.global_listview"
+]
+
 # app_include_js = [
 #     "public/js/form_timeline_override.js"
 # ]

@@ -2,6 +2,75 @@
   // ../esign_app/esign_app/public/js/timeline_button.js
   $(document).on("app_ready", function() {
     $.each(frappe.boot.user.can_read, function(i, doctype) {
+      frappe.listview_settings[doctype] = {
+        onload: function(listview) {
+          listview.page.add_inner_button(__("Send To eSign"), async function() {
+            const selected_docs = listview.get_checked_items();
+            if (!selected_docs.length) {
+              frappe.msgprint({
+                title: __("No Document Selected"),
+                message: __("Please select at least one document."),
+                indicator: "red"
+              });
+              return;
+            }
+            const selectedDocsHTML = `
+          <div style="font-family: monospace; font-size: 14px; padding: 10px;">
+            <strong>Selected Documents:</strong>
+            <ul style="margin-top: 8px; padding-left: 20px;">
+              ${selected_docs.map((doc) => `<li>${doc.name}</li>`).join("")}
+            </ul>
+          </div>
+        `;
+            let dialog = new frappe.ui.Dialog({
+              title: "Send to eSign",
+              fields: [
+                {
+                  fieldname: "selected_docs_display",
+                  label: "Selected Documents",
+                  fieldtype: "HTML",
+                  options: selectedDocsHTML
+                },
+                {
+                  fieldname: "template_select",
+                  label: "Select Template",
+                  fieldtype: "Link",
+                  options: "TempleteList",
+                  reqd: 1
+                },
+                {
+                  fieldname: "print_format",
+                  label: "Print Format",
+                  fieldtype: "Link",
+                  options: "Print Format",
+                  default: "Standard"
+                },
+                {
+                  fieldname: "letterhead",
+                  label: "Letter Head",
+                  fieldtype: "Link",
+                  options: "Letter Head",
+                  default: "No Letterhead"
+                },
+                {
+                  fieldname: "custom_docname",
+                  label: "Enter Custom Name",
+                  fieldtype: "Data",
+                  reqd: 1
+                }
+              ],
+              primary_action_label: "Send",
+              primary_action(values) {
+                console.log("\u{1F680} Send Action Triggered");
+                console.log("\u{1F4C4} Selected Docs:", selected_docs);
+                console.log("\u{1F9FE} Form Values:", values);
+                dialog.hide();
+              }
+            });
+            dialog.show();
+          }).addClass("btn-warning").css({ color: "darkred", "font-weight": "normal" });
+        }
+      };
       let buttonAdded = false;
       frappe.ui.form.on(doctype, {
         refresh: function(frm) {
@@ -339,8 +408,60 @@
     });
   });
 
+  // ../esign_app/esign_app/public/js/global_listview.js
+  console.log("\u{1F525} global_listview.js LOADED 3");
+  frappe.listview_settings["*"] = {
+    onload: function(listview) {
+      frappe.model.with_doctype(listview.doctype, function() {
+        const meta = frappe.get_meta(listview.doctype);
+        if (meta.istable)
+          return;
+        listview.page.events.on("toggle_select", () => {
+          inject_esign_action(listview);
+        });
+        inject_esign_action(listview);
+      });
+    }
+  };
+  function inject_esign_action(listview) {
+    const already_added = listview.page.actions_menu.find('[data-label="Send to eSign"]').length;
+    if (already_added)
+      return;
+    listview.page.add_actions_menu_item("Send to eSign", () => {
+      const selected = listview.get_checked_items();
+      if (!selected.length) {
+        frappe.msgprint(__("Please select at least one item."));
+        return;
+      }
+      show_esign_dialog(listview.doctype, selected);
+    });
+    console.log(`\u2705 'Send to eSign' injected for ${listview.doctype}`);
+  }
+  function show_esign_dialog(doctype, selected_docs) {
+    const html = selected_docs.map((doc) => `<li>${doctype} - ${doc.name}</li>`).join("");
+    const dialog = new frappe.ui.Dialog({
+      title: "Send to eSign",
+      fields: [
+        {
+          fieldtype: "HTML",
+          fieldname: "doc_list_html"
+        }
+      ],
+      primary_action_label: "Send",
+      primary_action() {
+        console.log("\u{1F4E6} eSign Payload:", {
+          doctype,
+          docs: selected_docs
+        });
+        dialog.hide();
+      }
+    });
+    dialog.fields_dict.doc_list_html.$wrapper.html(`<ul>${html}</ul>`);
+    dialog.show();
+  }
+
   // ../esign_app/esign_app/public/js/esign.bundle.js
   $(document).on("app_ready", function() {
   });
 })();
-//# sourceMappingURL=esign.bundle.DQW7YIDM.js.map
+//# sourceMappingURL=esign.bundle.LBTC4UFH.js.map

@@ -1,6 +1,133 @@
 // Timeline button for Frappe
 $(document).on("app_ready", function () {
   $.each(frappe.boot.user.can_read, function (i, doctype) {
+  
+frappe.listview_settings[doctype] = {
+  onload: function (listview) {
+    listview.page
+      .add_inner_button(__("Send to eSign"), async function () {
+        const selected_docs = listview.get_checked_items();
+
+        // ✅ If no selection, alert and exit
+        if (!selected_docs.length) {
+          frappe.msgprint({
+            title: __("No Document Selected"),
+            message: __("Please select at least one document."),
+            indicator: "red",
+          });
+          return;
+        }
+
+                let userEmailList = [];
+                try {
+                  const res = await frappe.call({
+                    method: "frappe.client.get_list",
+                    args: {
+                      doctype: "User",
+                      filters: { enabled: 1 },
+                      fields: ["email"],
+                      limit_page_length: 1000,
+                    },
+                  });
+        
+                  userEmailList = res.message.map((user) => user.email);
+                } catch (e) {
+                  console.error("Failed to fetch user emails:", e);
+                }
+              
+                console.log("===",listview)
+
+
+              let user = frappe.session.user;
+              let userDetails = await frappe.db.get_value("User", user, ["full_name", "email"]);
+              let doctype = listview.doctype;
+              let email = userDetails?.message?.email || "No Email";
+              
+        let templates = [];
+        try {
+          let response = await fetch(`/api/method/esign_app.api.get_templetes_for_doctype?user_mail=${email}&requesting_doctype=${doctype}`);
+          let data = await response.json();
+          if (data.message?.status === 200 && Array.isArray(data.message.data)) {
+            templates = data.message.data.map((temp) => ({
+              label: temp.templete_title.trim(),
+              value: temp.name.trim(),
+            }));
+          }
+        } catch (error) {
+          console.error("Error fetching templates:", error);
+        }
+
+        let templateOptions = {};
+        if (templates.length) {
+          templateOptions = Object.fromEntries(templates.map((t) => [t.label, t.value]));
+        }
+        // 👇 Build HTML list for dialog display
+        const selectedDocsHTML = `
+          <div style="font-family: monospace; font-size: 14px; padding: 10px;">
+            <strong>Selected Documents:</strong>
+            <ul style="margin-top: 8px; padding-left: 20px;">
+              ${selected_docs.map(doc => `<li>${doc.name}</li>`).join("")}
+            </ul>
+          </div>
+        `;
+
+        // Show dialog
+        let dialog = new frappe.ui.Dialog({
+          title: "Send to eSign",
+          fields: [
+            {
+              fieldname: "selected_docs_display",
+              label: "Selected Documents",
+              fieldtype: "HTML",
+              options: selectedDocsHTML,
+            },
+            {
+              fieldname: "template_select",
+              label: "Select Template",
+              fieldtype: "Link",
+              options: "TempleteList",
+              reqd: 1,
+              get_query() {
+                return {
+                  filters: {
+                    name: ["in", Object.values(templateOptions)],
+                  },
+                };
+              },
+            },
+            {
+              fieldname: "print_format",
+              label: "Print Format",
+              fieldtype: "Link",
+              options: "Print Format",
+              default: "Standard",
+            },
+            {
+              fieldname: "letterhead",
+              label: "Letter Head",
+              fieldtype: "Link",
+              options: "Letter Head",
+              default: "No Letterhead",
+            },
+          ],
+          primary_action_label: "Send",
+          primary_action(values) {
+            console.log("🚀 Send Action Triggered");
+            console.log("📄 Selected Docs:", selected_docs);
+            console.log("🧾 Form Values:", values);
+
+            dialog.hide();
+          }
+        });
+
+        dialog.show();
+      })
+      .addClass("btn-warning")
+      .css({ color: "darkred", "font-weight": "normal" });
+  }
+};
+
+
 
     let buttonAdded = false;
     frappe.ui.form.on(doctype, {

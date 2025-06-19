@@ -1,89 +1,6 @@
 // Timeline button for Frappe
 $(document).on("app_ready", function () {
   $.each(frappe.boot.user.can_read, function (i, doctype) {
-  
-frappe.listview_settings[doctype] = {
-  onload: function (listview) {
-    listview.page
-      .add_inner_button(__("Send To eSign"), async function () {
-        const selected_docs = listview.get_checked_items();
-
-        // ✅ If no selection, alert and exit
-        if (!selected_docs.length) {
-          frappe.msgprint({
-            title: __("No Document Selected"),
-            message: __("Please select at least one document."),
-            indicator: "red",
-          });
-          return;
-        }
-
-        // 👇 Build HTML list for dialog display
-        const selectedDocsHTML = `
-          <div style="font-family: monospace; font-size: 14px; padding: 10px;">
-            <strong>Selected Documents:</strong>
-            <ul style="margin-top: 8px; padding-left: 20px;">
-              ${selected_docs.map(doc => `<li>${doc.name}</li>`).join("")}
-            </ul>
-          </div>
-        `;
-
-        // Show dialog
-        let dialog = new frappe.ui.Dialog({
-          title: "Send to eSign",
-          fields: [
-            {
-              fieldname: "selected_docs_display",
-              label: "Selected Documents",
-              fieldtype: "HTML",
-              options: selectedDocsHTML,
-            },
-            {
-              fieldname: "template_select",
-              label: "Select Template",
-              fieldtype: "Link",
-              options: "TempleteList",
-              reqd: 1,
-            },
-            {
-              fieldname: "print_format",
-              label: "Print Format",
-              fieldtype: "Link",
-              options: "Print Format",
-              default: "Standard",
-            },
-            {
-              fieldname: "letterhead",
-              label: "Letter Head",
-              fieldtype: "Link",
-              options: "Letter Head",
-              default: "No Letterhead",
-            },
-            {
-              fieldname: "custom_docname",
-              label: "Enter Custom Name",
-              fieldtype: "Data",
-              reqd: 1,
-            },
-          ],
-          primary_action_label: "Send",
-          primary_action(values) {
-            console.log("🚀 Send Action Triggered");
-            console.log("📄 Selected Docs:", selected_docs);
-            console.log("🧾 Form Values:", values);
-
-            dialog.hide();
-          }
-        });
-
-        dialog.show();
-      })
-      .addClass("btn-warning")
-      .css({ color: "darkred", "font-weight": "normal" });
-  }
-};
-
-
 
     let buttonAdded = false;
     frappe.ui.form.on(doctype, {
@@ -107,10 +24,7 @@ frappe.listview_settings[doctype] = {
                 } catch (e) {
                   console.error("Failed to fetch user emails:", e);
                 }
-              
                 console.log("===",userEmailList)
-
-
               let user = frappe.session.user;
               let userDetails = await frappe.db.get_value("User", user, ["full_name", "email"]);
               let doctype = frm.doctype;
@@ -321,7 +235,7 @@ frappe.listview_settings[doctype] = {
                     let doctype = cur_frm.doc.doctype;
                     let docname = cur_frm.doc.name;
                     let printFormat = values.print_format || "Standard";
-                    let letterhead = values.letterhead || "No Letterhead";~
+                    let letterhead = values.letterhead || "No Letterhead";
                     let noLetterhead = letterhead === "No Letterhead" ? 1 : 0;
 
                     return `/api/method/frappe.utils.print_format.download_pdf?doctype=${doctype}&name=${docname}&format=${printFormat}&no_letterhead=${noLetterhead}&letterhead=${encodeURIComponent(letterhead)}&settings=%7B%7D&_lang=en`;

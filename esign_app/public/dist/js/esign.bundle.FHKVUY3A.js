@@ -4,7 +4,8 @@
     $.each(frappe.boot.user.can_read, function(i, doctype) {
       frappe.listview_settings[doctype] = {
         onload: function(listview) {
-          listview.page.add_inner_button(__("Send To eSign"), async function() {
+          listview.page.add_inner_button(__("Send to eSign"), async function() {
+            var _a, _b;
             const selected_docs = listview.get_checked_items();
             if (!selected_docs.length) {
               frappe.msgprint({
@@ -13,6 +14,43 @@
                 indicator: "red"
               });
               return;
+            }
+            let userEmailList = [];
+            try {
+              const res = await frappe.call({
+                method: "frappe.client.get_list",
+                args: {
+                  doctype: "User",
+                  filters: { enabled: 1 },
+                  fields: ["email"],
+                  limit_page_length: 1e3
+                }
+              });
+              userEmailList = res.message.map((user2) => user2.email);
+            } catch (e) {
+              console.error("Failed to fetch user emails:", e);
+            }
+            console.log("===", listview);
+            let user = frappe.session.user;
+            let userDetails = await frappe.db.get_value("User", user, ["full_name", "email"]);
+            let doctype2 = listview.doctype;
+            let email = ((_a = userDetails == null ? void 0 : userDetails.message) == null ? void 0 : _a.email) || "No Email";
+            let templates = [];
+            try {
+              let response = await fetch(`/api/method/esign_app.api.get_templetes_for_doctype?user_mail=${email}&requesting_doctype=${doctype2}`);
+              let data = await response.json();
+              if (((_b = data.message) == null ? void 0 : _b.status) === 200 && Array.isArray(data.message.data)) {
+                templates = data.message.data.map((temp) => ({
+                  label: temp.templete_title.trim(),
+                  value: temp.name.trim()
+                }));
+              }
+            } catch (error) {
+              console.error("Error fetching templates:", error);
+            }
+            let templateOptions = {};
+            if (templates.length) {
+              templateOptions = Object.fromEntries(templates.map((t) => [t.label, t.value]));
             }
             const selectedDocsHTML = `
           <div style="font-family: monospace; font-size: 14px; padding: 10px;">
@@ -36,7 +74,14 @@
                   label: "Select Template",
                   fieldtype: "Link",
                   options: "TempleteList",
-                  reqd: 1
+                  reqd: 1,
+                  get_query() {
+                    return {
+                      filters: {
+                        name: ["in", Object.values(templateOptions)]
+                      }
+                    };
+                  }
                 },
                 {
                   fieldname: "print_format",
@@ -51,12 +96,6 @@
                   fieldtype: "Link",
                   options: "Letter Head",
                   default: "No Letterhead"
-                },
-                {
-                  fieldname: "custom_docname",
-                  label: "Enter Custom Name",
-                  fieldtype: "Data",
-                  reqd: 1
                 }
               ],
               primary_action_label: "Send",
@@ -464,4 +503,4 @@
   $(document).on("app_ready", function() {
   });
 })();
-//# sourceMappingURL=esign.bundle.LBTC4UFH.js.map
+//# sourceMappingURL=esign.bundle.FHKVUY3A.js.map

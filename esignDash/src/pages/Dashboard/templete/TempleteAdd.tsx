@@ -60,13 +60,62 @@ const TempleteAdd: React.FC<TempleteAddProps> = ({ setRefreshTempletes }) => {
     navigate(`/templete/${templete.name}`, { state: { templete: templete } });
   };
   
+  function parseServerError(raw: any): string {
+  if (!raw) return "An unexpected error occurred.";
+
+  // Try common structured patterns
+  if (typeof raw === 'object') {
+    if (raw.message && typeof raw.message === 'string') {
+      if (raw.message.includes("Duplicate entry")) {
+        return "A template with this name already exists.";
+      }
+      if (raw.message.includes("IntegrityError")) {
+        return "A database integrity constraint was violated.";
+      }
+      return raw.message;
+    }
+
+    // If message is nested deeper or in list form
+    if (Array.isArray(raw.message)) {
+      return raw.message.join(' ');
+    }
+
+    // If it's an error object like frappe API
+    if (raw._server_messages) {
+      try {
+        const messages = JSON.parse(raw._server_messages);
+        const decoded = messages.map(m => {
+          const parsed = JSON.parse(m);
+          return parsed.message || '';
+        });
+        return decoded.join(' ') || "An unknown server error occurred.";
+      } catch (e) {
+        return "Server sent an unreadable error message.";
+      }
+    }
+  }
+
+  // If raw is just a string
+  if (typeof raw === 'string') {
+    if (raw.includes("Duplicate entry")) return "A template with this name already exists.";
+    if (raw.includes("IntegrityError")) return "A database integrity constraint was violated.";
+    return raw;
+  }
+
+  return "An unknown error occurred while processing your request.";
+}
 
   const saveTemplete = async () => {
     setButtonDisable(true);
     if (!templeteName) {
       setErrorMessage("No value provided for templete name");
+      setButtonDisable(false);
+      return;
     } else if (templeteName.length < 4) {
       setErrorMessage("Enter a name with more than 4 characters");
+      setButtonDisable(false);
+      return;
+      
     } else {
       const templeteObject = {
         templete_name: templeteName,
@@ -107,9 +156,11 @@ const TempleteAdd: React.FC<TempleteAddProps> = ({ setRefreshTempletes }) => {
           handleEdit(result.message.data)
           
         } else {
-          toast.error('Error while saving templete', {
+          const errorMsg = parseServerError(result.message);
+
+          toast.error(errorMsg, {
             position: "top-right",
-            autoClose: 500,
+            autoClose: 1000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
@@ -118,11 +169,12 @@ const TempleteAdd: React.FC<TempleteAddProps> = ({ setRefreshTempletes }) => {
             theme: "dark",
             transition: Flip,
           });
-          setButtonDisable(true);
+           setButtonDisable(false);
         }
       } catch (error) {
         console.error('Error:', error);
         alert('An error occurred while saving the templete');
+         setButtonDisable(false);
       }
     }
   };

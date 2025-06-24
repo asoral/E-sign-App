@@ -11,7 +11,6 @@
     |-- imp.txt
     |-- index.html
     |-- index.py
-    |-- package-lock.json
     |-- package.json
     |-- postcss.config.js
     |-- proxyOptions.ts
@@ -196,27 +195,18 @@
                 |-- test_documentlist.py
             |-- esign_signature
                 |-- __init__.py
-                |-- __pycache__
-                    |-- __init__.cpython-310.pyc
-                    |-- esign_signature.cpython-310.pyc
                 |-- esign_signature.js
                 |-- esign_signature.json
                 |-- esign_signature.py
                 |-- test_esign_signature.py
             |-- openssl
                 |-- __init__.py
-                |-- __pycache__
-                    |-- __init__.cpython-310.pyc
-                    |-- openssl.cpython-310.pyc
                 |-- openssl.js
                 |-- openssl.json
                 |-- openssl.py
                 |-- test_openssl.py
             |-- openssl_keys
                 |-- __init__.py
-                |-- __pycache__
-                    |-- __init__.cpython-310.pyc
-                    |-- openssl_keys.cpython-310.pyc
                 |-- openssl_keys.js
                 |-- openssl_keys.json
                 |-- openssl_keys.py
@@ -255,54 +245,56 @@
             |-- NotoSansJP-Regular.otf
             |-- NotoSerifJP-Regular.otf
             |-- assets
-                |-- BlankPDF-DkI1anhV.js
-                |-- ButtonUtilities-Dh3faqcT.js
+                |-- BlankPDF-Dy7Ps9n-.js
+                |-- ButtonUtilities-BLGV-MlW.js
                 |-- CardsSignature IMG-BQSy7hg3.png
-                |-- ComingSoon-Cqg_JiAE.js
-                |-- ConfirmDeleteModal-BSmy3xvz.js
-                |-- Dashboard-XDCRVj4c.js
+                |-- ComingSoon-DxrooyE_.js
+                |-- ConfirmDeleteModal-CQ4VY85o.js
+                |-- Dashboard-DuLxRN9t.js
                 |-- Dexciss_logo-DBvTm4ob.png
-                |-- DocEdit-BY7Vp54_.css
-                |-- DocEdit-BzZ3EhVx.js
-                |-- Documents-CmEMJjHt.js
-                |-- GetPages-BRe_hRla.js
+                |-- DocEdit-DHUUEYLi.css
+                |-- DocEdit-DrFVHDu-.js
+                |-- Documents-oAAzg1uF.js
+                |-- GetPages-DntCnGeF.js
                 |-- Group 5DocumentsIMG-Cd38Y1iH.png
                 |-- Group 6sentIMG-CW6eLmVP.png
                 |-- Group 7InboxIMG-CXRIKgGL.png
-                |-- Inbox-lrLyb7qV.js
-                |-- Login_Auth-qW9hyH0y.js
-                |-- OpenSSL-DNqamuia.js
-                |-- OpenSSLAllList-CsoMPrsg.js
-                |-- PDFButton-CiHQaVKA.js
-                |-- Profile-wljnCt_G.js
-                |-- PurePanel-BucKgxfA.js
-                |-- SearchOutlined-Dgfmn5yx.js
-                |-- Sent-CeOKlUHT.js
-                |-- SignPad-BEDHBmhY.js
-                |-- Signature-2SUU5in9.js
-                |-- Signer-BCcLiiAg.js
-                |-- Signer-BKBIE47W.css
-                |-- Signin_Auth-D8nrTMTK.js
+                |-- Inbox-CO-GRG18.js
+                |-- Login_Auth-iTOy_RnY.js
+                |-- OpenSSL-DnIXIuOx.js
+                |-- OpenSSLAllList-DSQfJh4X.js
+                |-- PDFButton-SsbvUxMB.js
+                |-- Profile-DSHTYPmF.js
+                |-- PurePanel-qJHsGzqp.js
+                |-- SearchOutlined-CLFp-IMB.js
+                |-- Sent-Gloy-R_M.js
+                |-- SignPad-B772Jm9b.js
+                |-- Signature-C4lhh_6i.js
+                |-- Signer-B1cs8Z-p.css
+                |-- Signer-BJ0fV0Oa.js
+                |-- Signin_Auth-1AOSkPvd.js
                 |-- Template ImagesTemplateIMG-DHgef6HD.png
-                |-- Templete-D7aQrgF2.js
-                |-- TempleteDash-C_4XKXjx.js
-                |-- TempleteEdit-K73hOMrq.js
-                |-- TempleteEdit-TrrxwRJx.css
-                |-- dayjsConfig-u9yF-Vmq.js
-                |-- extractUniqueElements-DIxs8W_A.css
-                |-- extractUniqueElements-DRdO49rL.js
-                |-- index-8RWNb1Am.css
-                |-- index-C5rNEUcM.js
-                |-- index-COavnqRi.js
-                |-- index-CePdwjid.js
-                |-- index-ChzhbOVz.js
-                |-- index-CtW0tHB0.js
-                |-- index-DLPrNEMj.js
-                |-- index-pHpklVGn.js
-                |-- react-toastify-BTGsrsBX.css
-                |-- react-toastify.esm-g470qx1_.js
+                |-- Templete-DuLgJZGP.js
+                |-- TempleteDash-CC0P48Di.js
+                |-- TempleteEdit--IizlPFO.css
+                |-- TempleteEdit-fhEmaqEL.js
+                |-- dayjsConfig-CsZZ7kkw.js
+                |-- extractUniqueElements-7VXnK_m4.js
+                |-- extractUniqueElements-DZrYvFpI.css
+                |-- index-Bd7dj0-D.js
+                |-- index-BhwpOvna.js
+                |-- index-C7GcRq18.js
+                |-- index-D9aCxEVM.css
+                |-- index-DO28oz5J.js
+                |-- index-DUihYSNx.js
+                |-- index-DyidRB81.js
+                |-- index-EPrn-231.js
+                |-- index-X8ONF5k8.js
+                |-- react-toastify-BE4BdE5o.css
+                |-- react-toastify.esm-BaJvvt89.js
                 |-- sign-BgsH1KkZ.jpg
                 |-- sign2-D4mO_rwh.jpg
+                |-- useVariants-BakeHlol.js
             |-- fonts
                 |-- NotoSansJP-Regular.otf
                 |-- NotoSerifJP-Regular.otf
@@ -318,8 +310,6 @@
         |-- pages
             |-- __init__.py
     |-- www
-        |-- __pycache__
-            |-- esignDash.cpython-310.pyc
         |-- esignDash.html
         |-- esignDash.py
 |-- license.txt

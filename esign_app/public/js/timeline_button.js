@@ -2,130 +2,213 @@
 $(document).on("app_ready", function () {
   $.each(frappe.boot.user.can_read, function (i, doctype) {
   
-frappe.listview_settings[doctype] = {
-  onload: function (listview) {
-    listview.page
-      .add_inner_button(__("Send to eSign"), async function () {
-        const selected_docs = listview.get_checked_items();
-
-        // ✅ If no selection, alert and exit
-        if (!selected_docs.length) {
-          frappe.msgprint({
-            title: __("No Document Selected"),
-            message: __("Please select at least one document."),
-            indicator: "red",
-          });
-          return;
-        }
-
-                let userEmailList = [];
-                try {
-                  const res = await frappe.call({
-                    method: "frappe.client.get_list",
-                    args: {
-                      doctype: "User",
-                      filters: { enabled: 1 },
-                      fields: ["email"],
-                      limit_page_length: 1000,
-                    },
-                  });
-        
-                  userEmailList = res.message.map((user) => user.email);
-                } catch (e) {
-                  console.error("Failed to fetch user emails:", e);
-                }
-              
-                console.log("===",listview)
-
-
-              let user = frappe.session.user;
-              let userDetails = await frappe.db.get_value("User", user, ["full_name", "email"]);
-              let doctype = listview.doctype;
-              let email = userDetails?.message?.email || "No Email";
-              
-        let templates = [];
-        try {
-          let response = await fetch(`/api/method/esign_app.api.get_templetes_for_doctype?user_mail=${email}&requesting_doctype=${doctype}`);
-          let data = await response.json();
-          if (data.message?.status === 200 && Array.isArray(data.message.data)) {
-            templates = data.message.data.map((temp) => ({
-              label: temp.templete_title.trim(),
-              value: temp.name.trim(),
-            }));
-          }
-        } catch (error) {
-          console.error("Error fetching templates:", error);
-        }
-
-        let templateOptions = {};
-        if (templates.length) {
-          templateOptions = Object.fromEntries(templates.map((t) => [t.label, t.value]));
-        }
-        // 👇 Build HTML list for dialog display
-        const selectedDocsHTML = `
-          <div style="font-family: monospace; font-size: 14px; padding: 10px;">
-            <strong>Selected Documents:</strong>
-            <ul style="margin-top: 8px; padding-left: 20px;">
-              ${selected_docs.map(doc => `<li>${doc.name}</li>`).join("")}
-            </ul>
-          </div>
-        `;
-
-        // Show dialog
-        let dialog = new frappe.ui.Dialog({
-          title: "Send to eSign",
-          fields: [
-            {
-              fieldname: "selected_docs_display",
-              label: "Selected Documents",
-              fieldtype: "HTML",
-              options: selectedDocsHTML,
-            },
-            {
-              fieldname: "template_select",
-              label: "Select Template",
-              fieldtype: "Link",
-              options: "TempleteList",
-              reqd: 1,
-              get_query() {
-                return {
-                  filters: {
-                    name: ["in", Object.values(templateOptions)],
-                  },
-                };
-              },
-            },
-            {
-              fieldname: "print_format",
-              label: "Print Format",
-              fieldtype: "Link",
-              options: "Print Format",
-              default: "Standard",
-            },
-            {
-              fieldname: "letterhead",
-              label: "Letter Head",
-              fieldtype: "Link",
-              options: "Letter Head",
-              default: "No Letterhead",
-            },
-          ],
-          primary_action_label: "Send",
-          primary_action(values) {
-            console.log("🚀 Send Action Triggered");
-            console.log("📄 Selected Docs:", selected_docs);
-            console.log("🧾 Form Values:", values);
-
-            dialog.hide();
-          }
-        });
-
-        dialog.show();
-      })
-      .addClass("btn-warning")
-      .css({ color: "darkred", "font-weight": "normal" });
+async function fetchPdfAsBase64(url) {
+  try {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    return await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = () => resolve(reader.result.split(",")[1]);
+      reader.onerror = reject;
+    });
+  } catch (err) {
+    console.error("PDF Fetch Error:", err);
+    return null;
   }
+}
+
+
+frappe.listview_settings[doctype] = {
+  onload(listview) {
+    listview.page.add_inner_button(__("Send to eSign"), async () => {
+      const selected_docs = listview.get_checked_items();
+      if (!selected_docs.length) {
+        frappe.msgprint({
+          title: __("No Document Selected"),
+          message: __("Please select at least one document."),
+          indicator: "red",
+        });
+        return;
+      }
+
+      const docnames = selected_docs.map(d => d.name);
+      const doctype = listview.doctype;
+      const user = frappe.session.user;
+      const userDetails = await frappe.db.get_value("User", user, ["full_name", "email"]);
+      const email = userDetails?.message?.email || "No Email";
+      const fullName = userDetails?.message?.full_name || "Unknown User";
+
+      // 1. Fetch Users for Assignment Dropdown
+      let userEmailList = [];
+      try {
+        const res = await frappe.call({
+          method: "frappe.client.get_list",
+          args: {
+            doctype: "User",
+            filters: { enabled: 1 },
+            fields: ["email"],
+            limit_page_length: 1000,
+          },
+        });
+        userEmailList = res.message.map(u => u.email);
+      } catch (e) {
+        console.error("Failed to fetch user list:", e);
+      }
+
+      // 2. Fetch Templates
+      let templates = [];
+      try {
+        const response = await fetch(`/api/method/esign_app.api.get_templetes_for_doctype?user_mail=${email}&requesting_doctype=${doctype}`);
+        const data = await response.json();
+        if (data.message?.status === 200 && Array.isArray(data.message.data)) {
+          templates = data.message.data.map(t => ({ label: t.templete_title.trim(), value: t.name.trim() }));
+        }
+      } catch (err) {
+        console.error("Template Fetch Failed:", err);
+      }
+
+      const templateOptions = Object.fromEntries(templates.map(t => [t.label, t.value]));
+      let selectedComponentData = []; // will store parsed template JSON data
+
+      const dialog = new frappe.ui.Dialog({
+        title: "Bulk Send to eSign",
+        fields: [
+          {
+            fieldname: "selected_docs",
+            fieldtype: "HTML",
+            label: "Documents",
+            options: `<ul style="font-family: monospace; padding-left: 20px;">
+              ${docnames.map(n => `<li>${n}</li>`).join("")}
+            </ul>`,
+          },
+          {
+            fieldname: "template_select",
+            label: "Select Template",
+            fieldtype: "Link",
+            options: "TempleteList",
+            reqd: 1,
+            get_query: () => ({
+              filters: {
+                name: ["in", Object.values(templateOptions)],
+              },
+            }),
+          },
+          {
+            fieldname: "print_format",
+            label: "Print Format",
+            fieldtype: "Link",
+            options: "Print Format",
+            default: "Standard",
+          },
+          {
+            fieldname: "letterhead",
+            label: "Letter Head",
+            fieldtype: "Link",
+            options: "Letter Head",
+            default: "No Letterhead",
+          },
+          {
+            fieldname: "assignments",
+            label: "Component Assignments",
+            fieldtype: "Table",
+            cannot_add_rows: true,
+            depends_on: "eval:doc.template_select",
+            fields: [
+              {
+                fieldname: "component",
+                label: "Component",
+                fieldtype: "Data",
+                read_only: 1,
+                in_list_view: 1,
+              },
+              {
+                fieldname: "email",
+                label: "Assign To",
+                fieldtype: "Autocomplete",
+                options: userEmailList,
+                in_list_view: 1,
+              },
+            ],
+          },
+        ],
+        primary_action_label: "Send",
+        primary_action: async (values) => {
+          frappe.show_progress("Sending Documents", 0, docnames.length);
+          let updatedComponentData = JSON.parse(JSON.stringify(selectedComponentData));
+
+          const updatedAssignments = dialog.get_value("assignments");
+          updatedComponentData.forEach(comp => {
+            const updated = updatedAssignments.find(row => row.component === comp.name);
+            comp.assign = updated?.email ? [updated.email] : [];
+          });
+
+          for (let i = 0; i < docnames.length; i++) {
+            const docname = docnames[i];
+            const noLetterhead = values.letterhead === "No Letterhead" ? 1 : 0;
+
+            const pdfUrl = `/api/method/frappe.utils.print_format.download_pdf?doctype=${doctype}&name=${docname}&format=${values.print_format}&no_letterhead=${noLetterhead}&letterhead=${encodeURIComponent(values.letterhead)}&_lang=en`;
+            const pdfBase64 = await fetchPdfAsBase64(pdfUrl);
+            if (!pdfBase64) continue;
+
+            await frappe.call({
+              method: "esign_app.api.create_updated_document",
+              args: {
+                custom_docname: docname,
+                selectedValue: values.template_select,
+                pdfBase64: pdfBase64,
+                email: email,
+                updatedComponentData: updatedComponentData,
+              },
+              error: (e) => console.error("Failed for", docname, e),
+            });
+
+            frappe.show_progress("Sending Documents", i + 1, docnames.length);
+          }
+
+          frappe.hide_progress();
+          frappe.msgprint("All documents submitted successfully.");
+          dialog.hide();
+        },
+      });
+
+      dialog.show();
+
+      // Template onchange logic: Populate assignment table
+      dialog.fields_dict.template_select.df.onchange = async () => {
+        const selectedTemplate = dialog.get_value("template_select");
+        if (!selectedTemplate) return;
+
+        try {
+          const response = await frappe.call({
+            method: "frappe.client.get_value",
+            args: {
+              doctype: "TempleteList",
+              filters: { name: selectedTemplate },
+              fieldname: "templete_json_data",
+            },
+          });
+
+          const raw = response.message?.templete_json_data;
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            selectedComponentData = parsed;
+
+            const assignmentTable = dialog.fields_dict.assignments.grid;
+            assignmentTable.df.data = parsed.map(row => ({
+              component: row.name,
+              email: row.assign?.[0] || "",
+            }));
+            assignmentTable.refresh();
+          }
+        } catch (err) {
+          console.error("Failed to parse assignment template:", err);
+        }
+      };
+    }).addClass("btn-warning");
+  },
 };
+
 
 
 

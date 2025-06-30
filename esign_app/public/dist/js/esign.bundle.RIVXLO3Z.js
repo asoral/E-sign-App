@@ -5,7 +5,9 @@
       async function fetchPdfAsBase64(url) {
         try {
           const res = await fetch(url);
+          console.log("Response from fetchPdfAsBase64 Function ::", res);
           const blob = await res.blob();
+          console.log("Blob inside fetchPdfAsBase64 Function ::", blob);
           return await new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(blob);
@@ -117,29 +119,60 @@
                     {
                       fieldname: "email",
                       label: "Assign To",
-                      fieldtype: "Autocomplete",
-                      options: userEmailList,
-                      in_list_view: 1
+                      fieldtype: "Data",
+                      in_list_view: 1,
+                      reqd: 0,
+                      get_data: function(txt) {
+                        return userEmailList.filter((email2) => email2.toLowerCase().includes(txt.toLowerCase())).map((email2) => ({ value: email2 }));
+                      }
                     }
                   ]
                 }
               ],
-              primary_action_label: "Send",
+              primary_action_label: "Send#",
               primary_action: async (values) => {
                 frappe.show_progress("Sending Documents", 0, docnames.length);
                 let updatedComponentData = JSON.parse(JSON.stringify(selectedComponentData));
                 const updatedAssignments = dialog.get_value("assignments");
+                console.log("===> updatedAssignments:", updatedAssignments);
+                console.log("===> updatedComponentData BEFORE:", updatedComponentData);
                 updatedComponentData.forEach((comp) => {
-                  const updated = updatedAssignments.find((row) => row.component === comp.name);
-                  comp.assign = (updated == null ? void 0 : updated.email) ? [updated.email] : [];
+                  const updated = updatedAssignments.find((row) => row.component.toLowerCase().trim() === comp.name.toLowerCase().trim());
+                  if (updated && updated.email) {
+                    comp.assign = [updated.email];
+                  } else {
+                    comp.assign = ["na"];
+                    console.warn("Could not assign for component:", comp.name);
+                  }
                 });
+                console.log("===> updatedComponentData AFTER:", updatedComponentData);
+                const assigned_users = {};
+                let userIndex = 0;
+                updatedComponentData.forEach((comp) => {
+                  if (Array.isArray(comp.assign)) {
+                    comp.assign.forEach((email2) => {
+                      if (email2) {
+                        assigned_users[userIndex] = {
+                          email: email2,
+                          status: "unseen"
+                        };
+                        userIndex++;
+                      }
+                    });
+                  }
+                });
+                console.log("Assigned Users:", assigned_users);
                 for (let i2 = 0; i2 < docnames.length; i2++) {
                   const docname = docnames[i2];
                   const noLetterhead = values.letterhead === "No Letterhead" ? 1 : 0;
                   const pdfUrl = `/api/method/frappe.utils.print_format.download_pdf?doctype=${doctype2}&name=${docname}&format=${values.print_format}&no_letterhead=${noLetterhead}&letterhead=${encodeURIComponent(values.letterhead)}&_lang=en`;
                   const pdfBase64 = await fetchPdfAsBase64(pdfUrl);
+                  console.log("PDF Base64 for", docname, ":", pdfBase64);
+                  console.log("Email for", docname, ":", email);
                   if (!pdfBase64)
                     continue;
+                  console.log("After pdfBase64 fetch for");
+                  console.log("+++++++++++>>", updatedComponentData);
                   await frappe.call({
                     method: "esign_app.api.create_updated_document",
                     args: {
@@ -147,7 +180,8 @@
                       selectedValue: values.template_select,
                       pdfBase64,
                       email,
-                      updatedComponentData
+                      updatedComponentData,
+                      assigned_users
                     },
                     error: (e) => console.error("Failed for", docname, e)
                   });
@@ -532,7 +566,7 @@
   });
 
   // ../esign_app/esign_app/public/js/global_listview.js
-  console.log("\u{1F525} global_listview.js LOADED 3");
+  console.log("\u{1F525} global_listview.js LOADED 4");
   frappe.listview_settings["*"] = {
     onload: function(listview) {
       frappe.model.with_doctype(listview.doctype, function() {
@@ -587,4 +621,4 @@
   $(document).on("app_ready", function() {
   });
 })();
-//# sourceMappingURL=esign.bundle.LVAR44EP.js.map
+//# sourceMappingURL=esign.bundle.RIVXLO3Z.js.map

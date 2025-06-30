@@ -1,4 +1,4 @@
-console.log("🔥 global_listview.js LOADED 3");
+console.log("🔥 global_listview.js LOADED 4");
 
 frappe.listview_settings["*"] = {
   onload: function (listview) {

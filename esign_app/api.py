@@ -1325,13 +1325,16 @@ def return_to_data_list(updatedComponentData):
 
 
 @frappe.whitelist()
-def create_updated_document(custom_docname, selectedValue, pdfBase64, email, updatedComponentData):
+def create_updated_document(custom_docname, selectedValue, pdfBase64, email, updatedComponentData , assigned_users = {}):
     """Create document using updated component JSON data and PDF."""
 
     try:
         # Convert updatedComponentData from JSON string to Python list (in case it’s sent as JSON string)
         if isinstance(updatedComponentData, str):
-            updatedComponentData = json.loads(updatedComponentData)
+            updatedComponentData2 = json.loads(updatedComponentData)
+        print("\n\nUpdated Component Data:", updatedComponentData)
+        print("\n\nUpdated Component Data2:", updatedComponentData2)
+        
 
         # Process the PDF
         pdf_data = split_pdf(pdfBase64)
@@ -1342,8 +1345,9 @@ def create_updated_document(custom_docname, selectedValue, pdfBase64, email, upd
             'document_title': custom_docname,
             'template_title': selectedValue,
             'owner_email': email,
-            'document_json_data': json.dumps(updatedComponentData),
+            'document_json_data': json.dumps(updatedComponentData2),
             'base_pdf_datad': json.dumps(pdf_data),
+            'assigned_users' : json.dumps(assigned_users),
             'document_created_at': datetime.now()
         }
 
@@ -1365,7 +1369,7 @@ def create_updated_document(custom_docname, selectedValue, pdfBase64, email, upd
                 """
         document_name=document_doc.name
         print("------------------------------->",document_name)
-        isChecked= True
+        isChecked = False if not assigned_users else True
         send_document_data(to, subject, body, document_name, email, isChecked)
         return {"status": 200, "message": "Document Created Successfully"}
 

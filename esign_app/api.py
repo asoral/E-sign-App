@@ -1334,7 +1334,7 @@ def create_updated_document(custom_docname, selectedValue, pdfBase64, email, upd
             updatedComponentData2 = json.loads(updatedComponentData)
         print("\n\nUpdated Component Data:", updatedComponentData)
         print("\n\nUpdated Component Data2:", updatedComponentData2)
-        
+        print("\n\nAssigned Users:",assigned_users)
 
         # Process the PDF
         pdf_data = split_pdf(pdfBase64)
@@ -1355,7 +1355,7 @@ def create_updated_document(custom_docname, selectedValue, pdfBase64, email, upd
         document_doc.insert(ignore_permissions=True)
         frappe.db.commit()
         
-        to = return_to_data_list(updatedComponentData)
+        to = assigned_users
         subject = f"New Document ({custom_docname} - {selectedValue}) - Action Required"
         body = f"""
                 Hello,

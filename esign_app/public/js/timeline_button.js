@@ -139,7 +139,7 @@ frappe.listview_settings[doctype] = {
             ],
           },
         ],
-        primary_action_label: "Send#",
+        primary_action_label: "Send",
         primary_action: async (values) => {
           frappe.show_progress("Sending Documents", 0, docnames.length);
           let updatedComponentData = JSON.parse(JSON.stringify(selectedComponentData));
@@ -160,22 +160,25 @@ frappe.listview_settings[doctype] = {
           });
           console.log("===> updatedComponentData AFTER:", updatedComponentData);
 
-          const assigned_users = {};
-          let userIndex = 0;
+ const assigned_users = {};
+const seenEmails = {};
 
-          updatedComponentData.forEach(comp => {
-            if (Array.isArray(comp.assign)) {
-              comp.assign.forEach(email => {
-                if (email) {
-                  assigned_users[userIndex] = {
-                    email: email,
-                    status: "unseen"
-                  };
-                  userIndex++;
-                }
-              });
-            }
-          });
+updatedComponentData.forEach(comp => {
+  if (Array.isArray(comp.assign)) {
+    comp.assign.forEach(email => {
+      if (email && !seenEmails[email]) {
+        assigned_users[Object.keys(assigned_users).length] = {
+          email: email,
+          status: "unseen"
+        };
+        seenEmails[email] = true; // mark as added
+      }
+    });
+  }
+});
+
+
+
 
           console.log("Assigned Users:", assigned_users);
 
@@ -189,7 +192,7 @@ frappe.listview_settings[doctype] = {
             console.log("Email for", docname, ":", email);
             if (!pdfBase64) continue;
             console.log("After pdfBase64 fetch for");
-            console.log("+++++++++++>>", updatedComponentData);
+            console.log("+++++++++++>>", assigned_users);
             
             await frappe.call({
               method: "esign_app.api.create_updated_document",

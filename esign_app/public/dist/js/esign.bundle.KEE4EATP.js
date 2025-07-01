@@ -129,7 +129,7 @@
                   ]
                 }
               ],
-              primary_action_label: "Send#",
+              primary_action_label: "Send",
               primary_action: async (values) => {
                 frappe.show_progress("Sending Documents", 0, docnames.length);
                 let updatedComponentData = JSON.parse(JSON.stringify(selectedComponentData));
@@ -147,16 +147,16 @@
                 });
                 console.log("===> updatedComponentData AFTER:", updatedComponentData);
                 const assigned_users = {};
-                let userIndex = 0;
+                const seenEmails = {};
                 updatedComponentData.forEach((comp) => {
                   if (Array.isArray(comp.assign)) {
                     comp.assign.forEach((email2) => {
-                      if (email2) {
-                        assigned_users[userIndex] = {
+                      if (email2 && !seenEmails[email2]) {
+                        assigned_users[Object.keys(assigned_users).length] = {
                           email: email2,
                           status: "unseen"
                         };
-                        userIndex++;
+                        seenEmails[email2] = true;
                       }
                     });
                   }
@@ -172,7 +172,7 @@
                   if (!pdfBase64)
                     continue;
                   console.log("After pdfBase64 fetch for");
-                  console.log("+++++++++++>>", updatedComponentData);
+                  console.log("+++++++++++>>", assigned_users);
                   await frappe.call({
                     method: "esign_app.api.create_updated_document",
                     args: {
@@ -621,4 +621,4 @@
   $(document).on("app_ready", function() {
   });
 })();
-//# sourceMappingURL=esign.bundle.RIVXLO3Z.js.map
+//# sourceMappingURL=esign.bundle.KEE4EATP.js.map

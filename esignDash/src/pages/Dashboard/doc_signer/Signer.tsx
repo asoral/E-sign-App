@@ -1072,15 +1072,6 @@ return (
         </button>
           { isCompleted == 1 && isRejected == 0 &&(
             <>
-            {/* Actual print Button */}
-            {/* <button
-            className="bg-[#283C42] text-white px-4 py-2 rounded border-2  border-transparent hover:border-[#283C42] hover:bg-white hover:text-[#283C42] transition-colors duration-300"
-          onClick={mergeAndPrintPDF}
-          >
-           Re-Merge
-          </button> */}
-
-            {/* Verify Signatures */}
           <button
             className="bg-[#283C42] text-white px-4 py-2 rounded border-2  border-transparent hover:border-[#283C42] hover:bg-white hover:text-[#283C42] transition-colors duration-300"
           onClick={Print_PDF_Merged_Valid}
@@ -1091,7 +1082,7 @@ return (
           </>
           )}
 
-          {documentStatusUser &&  isCompleted == 0 &&(
+          {documentStatusUser &&(
               <button
               className="bg-[#283C42] text-white px-4 py-2 cursor-not-allowed rounded border-2  border-transparent transition-colors duration-300"
               disabled={currentPage === datapdf.length - 1}
@@ -1257,7 +1248,7 @@ return (
                   <td className="py-2 px-4 border-b border-gray-200 max-w-[18vw]">
                     {component.type === 'signature' && ( <>
                       <SignInput onSelect={handleSelectSignComp} onClickbtn={handleModelSignComp} />
-                      <button>Click</button>
+               
                     </>
                     )}
                     {component.type === 'image' && (

@@ -784,7 +784,7 @@ def patch_user_status_document(document_title, assigned_user_list):
 def send_document_data(to, subject, body, document_name, user_mail, isChecked=True, mailUsers=None):
     try:
         doc = frappe.get_doc("DocumentList", document_name)
-        
+        print("isChecked in send_document_data:", isChecked)
         doc.assigned_users = to
         doc.document_status_mail = mailUsers
         doc.document_subject = subject
@@ -793,7 +793,8 @@ def send_document_data(to, subject, body, document_name, user_mail, isChecked=Tr
         doc.isnoteditable = isChecked
         
         doc.save()
-        send_url_email(to, subject ,body)
+        if isChecked:
+            send_url_email(to, subject ,body)
 
         return {'status': 200, 'message': 'Document Assigned Successfully'}
     
@@ -1369,7 +1370,21 @@ def create_updated_document(custom_docname, selectedValue, pdfBase64, email, upd
                 """
         document_name=document_doc.name
         print("------------------------------->",document_name)
-        isChecked = False if not assigned_users else True
+        if isinstance(assigned_users, str):
+            try:
+                assigned_users = json.loads(assigned_users)
+            except json.JSONDecodeError:
+                assigned_users = {}
+
+        # Step 2: Extract valid emails
+        valid_emails = [
+            data.get("email") 
+            for data in assigned_users.values()
+            if isinstance(data, dict) and data.get("email")
+        ]
+
+        isChecked = len(valid_emails) > 0
+        print("isChecked:", isChecked)
         send_document_data(to, subject, body, document_name, email, isChecked)
         return {"status": 200, "message": "Document Created Successfully"}
 

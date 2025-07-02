@@ -120,11 +120,7 @@
                       fieldname: "email",
                       label: "Assign To",
                       fieldtype: "Data",
-                      in_list_view: 1,
-                      reqd: 0,
-                      get_data: function(txt) {
-                        return userEmailList.filter((email2) => email2.toLowerCase().includes(txt.toLowerCase())).map((email2) => ({ value: email2 }));
-                      }
+                      in_list_view: 1
                     }
                   ]
                 }
@@ -621,4 +617,4 @@
   $(document).on("app_ready", function() {
   });
 })();
-//# sourceMappingURL=esign.bundle.KEE4EATP.js.map
+//# sourceMappingURL=esign.bundle.ZRPKDPA6.js.map

@@ -129,12 +129,12 @@ frappe.listview_settings[doctype] = {
                 label: "Assign To",
                 fieldtype: "Data",
                 in_list_view: 1,
-                reqd: 0,
-                get_data: function(txt) {
-                  return userEmailList
-                    .filter(email => email.toLowerCase().includes(txt.toLowerCase()))
-                    .map(email => ({ value: email }));
-                }
+                // reqd: 0,
+                // get_data: function(txt) {
+                //   return userEmailList
+                //     .filter(email => email.toLowerCase().includes(txt.toLowerCase()))
+                //     .map(email => ({ value: email }));
+                // }
               }
             ],
           },

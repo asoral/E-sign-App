@@ -1,15 +1,13 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast, Flip } from 'react-toastify';
 // import back canva from "./pdfsb";  
 import Moveable from 'react-moveable';
 import { MoveableManagerInterface, Renderer } from "react-moveable";
-import { PDFDocument, rgb } from 'pdf-lib';
-import { useDrag, useDrop, DragSourceMonitor} from 'react-dnd';
+import { useDrag, useDrop} from 'react-dnd';
 // Helper Custom ---
 import PdfRenderer from '../helper/pdfsb/PdfRenderer';
-import { datapdfDemo } from '../helper/DataPDF'
 import { BlankDatapdf } from '../helper/BlankPDF'
 import { initialComponents , DexcissTemplete , HelloDexciss } from '../helper/TemplateMaping';
 import { ComponentData } from '../helper/Interface'
@@ -17,12 +15,10 @@ import { splitPDF } from '../helper/GetPages';
 import { pdfToBase64 } from '../helper/PDFtoBase64';
 import { ButtonType , buttonConfigs } from '../helper/ButtonUtilities';
 import './templete.css'
-import SignInput from '../helper/SignInput';
 import dayjs from '../helper/dayjsConfig';
 import { Modal, Tabs, Input, Checkbox } from 'antd';
-import type { TabsProps } from 'antd';
 import { Scrollbars } from 'react-custom-scrollbars-2';
-
+import { Spin } from 'antd';
 type SelectedComponent = {
   id: number;
   type: ComponentType | string;
@@ -1162,24 +1158,30 @@ return (
                 )}
                 className="pl-1"
               >
-                {filteredDoctypes.length === 0 ? (
-                  <p className="text-sm text-gray-400 italic">No Doctypes Found</p>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 pr-2">
-                    {filteredDoctypes.map((doctype) => (
-                      <label
-                        key={doctype}
-                        className="flex items-center gap-2 bg-white/5 rounded px-2 py-1 hover:bg-white/10 cursor-pointer"
-                      >
-                        <Checkbox
-                          checked={selectedDoctypes.includes(doctype)}
-                          onChange={() => toggleSelection(doctype)}
-                        />
-                        <span className="text-sm text-white break-words">{doctype}</span>
-                      </label>
-                    ))}
-                  </div>
-                )}
+                {loading ? (
+                    <div className="flex justify-center items-center h-40">
+                       <Spin tip="Loading doctypes..." />
+                      <span className="text-white text-sm italic animate-pulse ml-2">Loading doctypes... It will take some time !!!</span>
+                    </div>
+                  ) : filteredDoctypes.length === 0 ? (
+                    <p className="text-sm text-gray-400 italic">No Doctypes Found</p>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 pr-2">
+                      {filteredDoctypes.map((doctype) => (
+                        <label
+                          key={doctype}
+                          className="flex items-center gap-2 bg-white/5 rounded px-2 py-1 hover:bg-white/10 cursor-pointer"
+                        >
+                          <Checkbox
+                            checked={selectedDoctypes.includes(doctype)}
+                            onChange={() => toggleSelection(doctype)}
+                          />
+                          <span className="text-sm text-white break-words">{doctype}</span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+
               </Scrollbars>
             <div className="flex justify-end mt-6">
               {/* <button

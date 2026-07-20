@@ -1,0 +1,35 @@
+{
+    "name": "@types/signature_pad",
+    "version": "2.3.6",
+    "description": "TypeScript definitions for signature_pad",
+    "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/signature_pad",
+    "license": "MIT",
+    "contributors": [
+        {
+            "name": "Abubaker Bashir",
+            "githubUsername": "AbubakerB",
+            "url": "https://github.com/AbubakerB"
+        },
+        {
+            "name": "Jason Mihalick",
+            "githubUsername": "jrmihalick",
+            "url": "https://github.com/jrmihalick"
+        },
+        {
+            "name": "Jaeyeon Lee",
+            "githubUsername": "leejaedus",
+            "url": "https://github.com/leejaedus"
+        }
+    ],
+    "main": "",
+    "types": "index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/signature_pad"
+    },
+    "scripts": {},
+    "dependencies": {},
+    "typesPublisherContentHash": "a14ed6a2e3a939c49f8481846af1a4892112d019563360be1d3eefdf97f0eb18",
+    "typeScriptVersion": "4.5"
+}
